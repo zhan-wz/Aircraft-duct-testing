@@ -10,7 +10,7 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button type="primary" icon="el-icon-search" :loading="loadingFilter" @click="handleFilter">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" :loading="loadingFilter" @click="handleFilter">查询</el-button>
 
       <div style="float:right;"> 
         <!--时间日期筛选-->

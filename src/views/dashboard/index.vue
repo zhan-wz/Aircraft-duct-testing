@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <audio id="audioId" autoplay ></audio>
     <el-row type="flex" class="row-bg" justify="space-around">
       <el-col :span="3">原始采样图片：</el-col>
       <el-col :span="4" v-for="(o, index) in 5" :key="o" :offset=0.5>
@@ -39,7 +40,12 @@
       <el-col :span="4">腐蚀缺陷: 5次</el-col>
       <el-col :span="4">裂纹缺陷: 5次</el-col>
     </el-row>
-      
+
+    <el-row type="flex" class="row-bg" justify="space-around">
+      <el-col :span="4">检测结果：</el-col>
+      <el-col :span="4">{{ result }}</el-col>
+      <el-col :span="4"><el-button type="primary" @click="playAudio">播放</el-button></el-col>
+    </el-row>
     
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
     <!-- <div class="dashboard-text">原始采样图片：</div>
@@ -51,6 +57,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
+// 音频文件引入 直接在js中audio.src=路径 会报错
+import qualified from '../../../static/audio/检测合格.mp3'
+import scratch from '../../../static/audio/划痕缺陷.mp3'
+import pit from '../../../static/audio/压坑缺陷.mp3'
+import corrosion from '../../../static/audio/腐蚀缺陷.mp3'
+import crack from '../../../static/audio/裂纹缺陷.mp3'
+
 
 export default {
   name: 'Dashboard',
@@ -61,8 +74,21 @@ export default {
   },
   data() {
     return {
-      currentDate: new Date()
+      currentDate: new Date(),
+      result: '0000'
     }
+  },
+  methods: {
+    /** 
+     * 音频特定条件下播放
+    playAudio() {
+      let audio = document.getElementById("audioId");
+      if (检测合格) {
+        audio.src = qualified
+        audio.play()
+      }
+    }
+    */
   }
 }
 </script>
