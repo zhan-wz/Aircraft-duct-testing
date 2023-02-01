@@ -43,8 +43,8 @@
 
     <el-row type="flex" class="row-bg" justify="space-around">
       <el-col :span="4">检测结果：</el-col>
-      <el-col :span="4">{{ result }}</el-col>
-      <el-col :span="4"><el-button type="primary" @click="playAudio">播放</el-button></el-col>
+      <el-col :span="20">{{ result }}</el-col>
+      <!-- <el-col :span="4"><el-button type="primary" @click="playAudio">播放</el-button></el-col> -->
     </el-row>
     
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
