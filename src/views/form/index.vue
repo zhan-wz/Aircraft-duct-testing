@@ -41,11 +41,12 @@
       </el-form-item>
       <el-form-item label="检测结果">
         <el-col :span="4">
-        {{ form.detecte }}
+          检测合格
+        <!-- {{ form.detecte }} -->
       </el-col>
         <audio id="audioId" autoplay ></audio>
-        
-        <el-button type="primary" @click="playAudio" >播放</el-button>
+        <!-- 检测结果播报 相当于最少检测一轮 听到1个语音播报-->
+        <!-- <el-button type="primary" @click="playAudio" >播放</el-button> -->
       </el-form-item>
       <el-form-item>
         <!-- <el-button type="primary" @click="onSubmit">Create</el-button>
