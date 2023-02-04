@@ -1,6 +1,12 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="120px">
+      <el-form-item label="检测工件计数">
+        <el-col :span="4">
+          1
+        <!-- {{ form.detecte }} -->
+        </el-col>
+      </el-form-item>
       <el-form-item label="原始采样图片">
         <div class="box">
           <el-image :src=img class="item"></el-image>
@@ -31,7 +37,7 @@
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="本次检测计数">
+      <el-form-item label="检测结果计数">
         <div class="box">
           <div class="item" v-for="(k,v) in form.result" :key="k">
             <!-- {{ k.label }} : <el-input-number :value="k.value" :disabled="true"></el-input-number> -->
@@ -39,13 +45,13 @@
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="检测结果">
+      <el-form-item label="本次检测结果">
         <el-col :span="4">
-          检测合格
+          检测合格/工件有缺陷
         <!-- {{ form.detecte }} -->
       </el-col>
-        <audio id="audioId" autoplay ></audio>
-        <!-- 检测结果播报 相当于最少检测一轮 听到1个语音播报-->
+        <audio id="audioId" autoplay ></audio> 
+        <!-- 检测结果播报 相当于检测一轮 听到1个语音播报 检测合格/工件有缺陷-->
         <!-- <el-button type="primary" @click="playAudio" >播放</el-button> -->
       </el-form-item>
       <el-form-item>
