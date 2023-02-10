@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <audio id="audioId" autoplay ></audio> 
     <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="检测工件计数">
         <el-col :span="4">
@@ -50,7 +51,6 @@
           检测合格/工件有缺陷
         <!-- {{ form.detecte }} -->
       </el-col>
-        <audio id="audioId" autoplay ></audio> 
         <!-- 检测结果播报 相当于检测一轮 听到1个语音播报 检测合格/工件有缺陷-->
         <!-- <el-button type="primary" @click="playAudio" >播放</el-button> -->
       </el-form-item>
@@ -129,6 +129,10 @@ export default {
     }
   },
   created(){
+    // this.playAudio()
+  },
+  mounted() {
+    console.log('mounted');
     this.playAudio()
   },
   methods: {
@@ -144,6 +148,7 @@ export default {
     playAudio() {
       let audio = document.getElementById("audioId");
       if (this.form.detecte == '0000') {
+        console.log("audio---------",audio);
         audio.src = qualified
         audio.play()
       }
