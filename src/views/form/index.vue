@@ -68,6 +68,7 @@ import scratch from '../../../static/audio/划痕缺陷.mp3'
 import pit from '../../../static/audio/压坑缺陷.mp3'
 import corrosion from '../../../static/audio/腐蚀缺陷.mp3'
 import crack from '../../../static/audio/裂纹缺陷.mp3'
+import error from '../../../static/audio/error.mp3'
 
 export default {
   filters: {
@@ -133,7 +134,7 @@ export default {
   },
   mounted() {
     console.log('mounted');
-    this.playAudio()
+    // this.playAudio()
   },
   methods: {
     onSubmit() {
@@ -146,16 +147,12 @@ export default {
       })
     },
     playAudio() {
+      // Fixfox和chrome不支持自动播放 Edge可以
       let audio = document.getElementById("audioId");
       if (this.form.detecte == '0000') {
-        console.log("audio---------",audio);
         audio.src = qualified
         audio.play()
       }
-      // if (this.result == '0000') {
-      //   audio.src = qualified
-      //   audio.play()
-      // }
     }
   }
 }
@@ -174,6 +171,9 @@ export default {
 
 .line{
   text-align: center;
+}
+.el-form-item {
+    margin-bottom: 10px;
 }
 </style>
 
