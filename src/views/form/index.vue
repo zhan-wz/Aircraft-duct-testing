@@ -33,7 +33,7 @@
               <el-tag class="tag" :type="k | statusFilter">{{ k }}</el-tag>
             </div>
             <div v-else v-for="(item,index) in k" :key="item">
-              <el-tag class="tag" :type="item | statusFilter">{{ item }}</el-tag>
+              <el-tag class="tag row" :type="item | statusFilter">{{ item }}</el-tag>
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default {
         //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
         //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
         // ],
-        status: ['检测合格','划痕缺陷',['压坑缺陷','裂纹缺陷'],'腐蚀缺陷','裂纹缺陷'],
+        status: ['检测合格','划痕缺陷',['压坑缺陷','裂纹缺陷','腐蚀缺陷','裂纹缺陷'],'腐蚀缺陷','裂纹缺陷'],
         result: [
           {
             label: '检测合格',
@@ -174,6 +174,10 @@ export default {
 }
 .el-form-item {
     margin-bottom: 10px;
+}
+.row {
+  float: left;
+  margin:0 2px 2px 0;
 }
 </style>
 
