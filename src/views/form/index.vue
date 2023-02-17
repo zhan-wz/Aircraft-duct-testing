@@ -134,7 +134,7 @@ export default {
   },
   mounted() {
     console.log('mounted');
-    // this.playAudio()
+    this.playAudio()
   },
   methods: {
     onSubmit() {
