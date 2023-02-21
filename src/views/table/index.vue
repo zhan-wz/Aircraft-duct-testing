@@ -39,14 +39,15 @@
           {{ scope.$index }}
         </template>
       </el-table-column>
-      <el-table-column label="任务名称">
+      <el-table-column label="任务ID" width="95">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.taskId }}
         </template>
       </el-table-column>
-      <el-table-column label="示例图片" width="220" align="center">
+      <el-table-column label="示例图片" align="center">
         <template slot-scope="scope">
-          <img :src=scope.row.author class="image" >
+          <img :src=scope.row.pId class="image" >
+          
         </template>
       </el-table-column>
       <!-- <el-table-column label="Pageviews" width="110" align="center">
@@ -56,13 +57,20 @@
       </el-table-column> -->
       <el-table-column class-name="status-col" label="检测结果" width="110" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+          <div class="item" v-for="(k,v) in scope.row.defectType" :key="k">
+            <div v-if="(typeof k === 'string')">
+              <el-tag class="tag" :type="k | statusFilter" style="margin-top: 5px;">{{ k }}</el-tag>
+            </div>
+            <div v-else v-for="(item,index) in k" :key="item" >
+              <el-tag class="tag row" :type="item | statusFilter" >{{ item }}</el-tag>
+            </div>
+          </div>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="创建时间" width="200">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ scope.row.create_time }}</span>
+          <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -83,12 +91,13 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import { getList, getPic } from '@/api/table'
+import { isTSMethodSignature } from '@babel/types'
 import moment from 'moment'
 
 export default {
   filters: {
-    statusFilter(status) {
+    statusFilter(defectType) {
       const statusMap = {
         '检测合格': 'success',
         // draft: 'gray',
@@ -97,7 +106,7 @@ export default {
         '腐蚀缺陷': 'danger',
         '裂纹缺陷': 'danger'
       }
-      return statusMap[status]
+      return statusMap[defectType]
     }
   },
   data() {
@@ -156,9 +165,11 @@ export default {
       pageSize: 10, // 每页的记录数
     }
   },
+
   created() {
     this.fetchData()
   },
+
   watch:{
     // 不监听 后端传参
     datePicker: {
@@ -168,13 +179,42 @@ export default {
     //   handler: 'filterLabel'
     // }
   },
+  
   methods: {
     fetchData() {
       this.listLoading = true
       getList().then(response => {
-        this.list = response.data.items
+        // this.list = response.data.items
+        console.log('返回数据',response);
+        this.list = response.data
+        this.list.forEach(item => {
+          item.defectType = this.detectFromat(item) 
+          item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
+          console.log('item-------',item);
+          // awiat getPic一下
+        })
         this.listLoading = false
       })
+    },
+    // 缺陷类型转化
+    detectFromat(item) {
+      let arr = []
+      if(item.def1 != 0){
+        arr.push('划痕缺陷')
+      }
+      if(item.def2 != 0){
+        arr.push('压坑缺陷')
+      }
+      if(item.def3 != 0){
+        arr.push('腐蚀缺陷')
+      }
+      if(item.def4 != 0){
+        arr.push('裂纹缺陷')
+      }
+      if(arr == []){
+        arr.push('检测合格')
+      }
+      return arr
     },
     // 分页 -- 1/28 完成
     handleSizeChange(val) {
@@ -193,7 +233,7 @@ export default {
         });
         // 动态筛选
         this.list = this.list.filter((i)=>{
-          return i.create_time < date[1] && i.create_time > date[0]
+          return i.createTime < date[1] && i.createTime > date[0]
         })
       } else {
         this.fetchData()
@@ -201,44 +241,46 @@ export default {
 
       // this.listLoading = true
       // getList().then(response => {
-      //   // 类别是status status: "压坑缺陷"; 日期是 create_time create_time: "2003-12-22 07:08:57"
+      //   // 类别是status status: "压坑缺陷"; 日期是 createTime createTime: "2003-12-22 07:08:57"
       //   // response.data.items
       //   console.log("监听日期",);
       // })
     },
-    /**
-    filterLabel() {
-      if(this.labelPicker) {
-        console.log('if true', this.labelPicker);
-        this.list = this.fetchData().filter(i => {
-          return this.labelPicker.includes(i.status)
-        })
-      } else {
-        console.log('if false', this.labelPicker);
-        this.fetchData()
-      }
+    // 用户点击了一个缺陷之后 不清空本次搜索 继续多选点击另外一个缺陷
+    // 此时this.list并没有恢复全部数据 而是在第一个缺陷的结果中进行筛选
+    // filterLabel() {
+    //   this.list = this.list.filter((i)=>{
+    //     // console.log('-----i--------',['压坑缺陷'].includes('压坑缺陷'));
+    //     console.log('--label------',this.labelPicker);
+    //     console.log('----------i.defectType------',i.defectType);
+    //     // console.log('----------return------',this.labelPicker.includes(i.defectType));
+    //     console.log('--------------交集-----------',i.defectType.filter(x => this.labelPicker.includes(x)));
+    //     console.log(i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true);
+    //     return i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true      
+    //   })
 
-      console.log('标签筛选', this.labelPicker);
-      console.log('筛选后的',this.list);
-    },
-    */
+    //   console.log('标签筛选', this.labelPicker);
+    //   console.log('筛选后的',this.list);
+    // },
+
     // 标签筛选 -- 1/28 完成 （可优化）
     handleFilter() {
       this.loadingFilter = true
-      this.list = this.list.filter((i)=>{
-        return this.labelPicker.includes(i.status)
-      })
+      if(this.labelPicker.length !== 0) {
+        this.list = this.list.filter((i)=>{
+          return i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true      
+        })
+      } else {
+        this.fetchData()
+      }
       this.loadingFilter = false
-    
-      console.log('标签筛选', this.labelPicker);
-      console.log('筛选后的',this.list);
     }
   }
 }
 </script>
 <style>
-.image {
+/* .image {
     width: 100%;
     display: block;
-  }
+  } */
 </style>
