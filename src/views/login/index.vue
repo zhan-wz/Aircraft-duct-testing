@@ -43,17 +43,19 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
-      <div class="tips">
+      <!-- <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
         <span> password: any</span>
-      </div>
+      </div> -->
 
     </el-form>
   </div>
 </template>
 
 <script>
+import { login } from '@/api/user'
 import { validUsername } from '@/utils/validate'
+import { MessageBox, Message } from 'element-ui'
 
 export default {
   name: 'Login',
@@ -75,7 +77,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -105,18 +107,48 @@ export default {
         this.$refs.password.focus()
       })
     },
+    //之前模板的登录入口
+    // handleLogin() {
+    //   this.$refs.loginForm.validate(valid => {
+    //     if (valid) {
+    //       this.loading = true
+    //       this.$store.dispatch('/user/login', this.loginForm).then(() => {
+    //         this.$router.push({ path: this.redirect || '/' })
+    //         this.loading = false
+    //       }).catch(() => {
+    //         this.loading = false
+    //       })
+    //     } else {
+    //       console.log('error submit!!')
+    //       return false
+    //     }
+    //   })
+    // }
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+          // login接口接收Content-Type： multipart/form-data;
+          var formData = new FormData();
+          formData.append("username", this.loginForm.username.trim());
+          formData.append("password", this.loginForm.password);
+          console.log('----formData --------',formData);
+          login(formData).then(response => {
+            if(response.code !== 200) {
+              Message({
+                message: res.message || 'Error',
+                type: 'error',
+                duration: 5 * 1000
+              })
+            } else {
+              this.$router.push({ path: this.redirect || '/' })
+            }
             this.loading = false
           }).catch(() => {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
+          console.log('error submit');
           return false
         }
       })

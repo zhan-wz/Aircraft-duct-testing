@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { getList, getPic } from '@/api/table'
+import { getLabel, getList, getPic } from '@/api/table'
 import { isTSMethodSignature } from '@babel/types'
 import moment from 'moment'
 
@@ -211,7 +211,7 @@ export default {
       if(item.def4 != 0){
         arr.push('裂纹缺陷')
       }
-      if(arr == []){
+      if(arr.length == 0){
         arr.push('检测合格')
       }
       return arr
@@ -274,13 +274,53 @@ export default {
         this.fetchData()
       }
       this.loadingFilter = false
+    },
+
+    /** 
+    handleFilter() {
+      console.log('========this.labelPicker=======',this.labelPicker);
+      let arrLable = []
+      this.labelPicker.forEach(label => {
+        if(label == '划痕缺陷') {
+          arrLable.push('def1')
+        }
+        if(label == '压坑缺陷') {
+          arrLable.push('def2')
+        }
+        if(label == '腐蚀缺陷') {
+          arrLable.push('def3')
+        }
+        if(label == '裂纹缺陷') {
+          arrLable.push('def4')
+        }
+        if(label == '检测合格') {
+          arrLable.push('def0')
+        }
+      })
+      console.log('========arrLable=======',arrLable);
+      let formData = new FormData();
+      formData.append("defect[]", this.labelPicker);
+      this.listLoading = true
+      getLabel(formData).then(res => {
+        console.log('--------res-------',res.data);
+        this.list = res.data
+        this.list.forEach(item => {
+          item.defectType = this.detectFromat(item) 
+          item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
+          console.log('item-------',item);
+          // awiat getPic一下
+        })
+        this.listLoading = false
+      })
     }
+    */
   }
 }
 </script>
 <style>
-/* .image {
-    width: 100%;
+.image {
+    width: 246px;
+    height: 180px;
     display: block;
-  } */
+  }
 </style>

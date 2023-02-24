@@ -14,3 +14,14 @@ export function getPic(id) {
     method: 'get'
   })
 }
+
+export function getLabel(formData) {
+  return request({
+    url: `/api/detect`,
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+   },
+   data: formData
+  })
+}

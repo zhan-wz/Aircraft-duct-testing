@@ -9,10 +9,11 @@
         </el-col>
       </el-form-item>
       <el-form-item label="原始采样图片">
-        <div class="box">
+        <div class="box imgbox">
           <div class="item" v-for="(k,v) in form.oriImg">
-            <el-image :src=k class="item"></el-image>
+            <el-image :src=k class="item img"></el-image>
             <!-- <el-image :src=img class="item"></el-image>
+            <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image> -->
@@ -22,7 +23,7 @@
       <el-form-item label="检测输出图片">
         <div class="box">
           <div class="item" v-for="(k,v) in form.markImg">
-            <el-image :src=k class="item"></el-image>
+            <el-image :src=k class="item img"></el-image>
             <!-- <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
@@ -69,7 +70,7 @@
 <script>
 import qualified from '../../../static/audio/检测合格.mp3'
 import error from '../../../static/audio/error.mp3'
-
+import { MessageBox, Message } from 'element-ui'
 import { getList, getTotal } from '@/api/form'
 
 export default {
@@ -132,37 +133,117 @@ export default {
           }
         ],
         detecte: ''
-      }
+      },
+      total: 1,
+      audio: 1,
+      flag: false, // 有缺陷为TRUE
+      time: ''
     }
   },
   created(){
     this.fetchData()
     this.fetchTotal()
+    // this.playAudio()
   },
   mounted() {
     console.log('mounted');
-    this.playAudio()
+    
+    this.time = setInterval(() => {
+      // console.log('我是定时执行');//我是定时执行
+      getList().then(response => {
+        let data = response.data
+        if(data.length !== 0) {
+          // 普通函数定时器 this 指向 window 拿不到data
+          // 箭头函数定时器 this 依赖外层函数 外层的this指向谁 就是谁
+          // console.log('=========data[0].id----------',data[0].id);
+          // console.log('===========定时器中的 this-----------',this.total);
+          
+          if(data[0].id != this.total) {
+            // this.form.defectType = []
+            // this.form.oriImg = []
+            // this.form.markImg = []
+            // this.form.detecte = ''
+            this.form.total++
+            this.total = data ? data[0].id : 1
+            // console.log('----------新加了任务-----------');
+          }
+        }
+      })
+    },1000);
+  },
+  beforeDestroy() {
+    console.log('组件销毁前 0000000000000000');
+    this.form.defectType = []
+    this.form.oriImg = []
+    this.form.markImg = []
+    this.form.detecte = ''
+    clearInterval(this.time);
+  },
+  watch: {
+    total: {
+      handler(newValue, oldValue){  //newValue 新的值，oldValue变化前的值
+        console.log("--------监听数据-- 新数据-------",newValue)
+        console.log('------------监听数据 ------------ 老数据----------',oldValue);
+        if(oldValue !== 1){
+          console.log('-------不是第一次---------');
+          setTimeout(() => {
+            this.form.defectType = []
+            this.form.oriImg = []
+            this.form.markImg = []
+            this.form.detecte = ''
+            this.fetchData()
+            this.flag = false   
+            this.fetchTotal()
+          }, 3000)
+          // clearTimeout(setT)
+        }
+      },
+      // deep: true
+    },
+    audio: {
+      handler(newV,oldV) {
+        console.log('-------------监听语音播报---------');
+        this.playAudio()
+      }
+    }
   },
   methods: {
     fetchData() {
       // 处理非检测结果计数
       getList().then(response => {
         console.log('new接口',response.data);
-        let data = response.data
-        data.forEach(element => {
-          this.form.defectType.push(this.detectFromat(element))
-          this.form.oriImg.push(`http://localhost/api/OriImage/${element.pid}`)
-          this.form.markImg.push(`http://localhost/api/MarkImage/${element.pid}`)
-        });
-        console.log('返回数据form',this.form);
-        if(this.form.defectType.indexOf('检测合格') !== -1){
-          this.form.detecte = '检测合格'
+        if (response.data.length !== 0) {
+          let data = response.data
+          this.total = data ? data[0].id : 1
+          this.audio++
+          data.forEach(element => {
+            this.form.defectType.push(this.detectFromat(element))
+            this.form.oriImg.push(`http://localhost/api/OriImage/${element.pid}`)
+            this.form.markImg.push(`http://localhost/api/MarkImage/${element.pid}`)
+          });
+          console.log('new返回数据form',this.form);
+          this.form.defectType.forEach(item => {
+            if(item[0] == '划痕缺陷'|| item[0] == '压坑缺陷' || item[0] == '腐蚀缺陷' || item[0] == '裂纹缺陷') {
+              this.flag = true
+            }
+          })
+          if(this.flag) {
+            this.form.detecte = '工件有缺陷'
+          } else {
+            this.form.detecte = '检测合格'
+            this.flag = false
+          }
         } else {
-          this.form.detecte = '工件有缺陷'
+          Message({
+            message: '检测算法还未处理完成，请稍后刷新数据',
+            type: 'error'
+          })
         }
+        // this.playAudio()
       })
     },
-
+    // 定时器
+    
     // 处理结果计数
     fetchTotal() {
       getTotal().then(response => {
@@ -185,7 +266,7 @@ export default {
       if(item.def4 != 0){
         arr.push('裂纹缺陷')
       }
-      if(arr == []){
+      if(arr.length == 0){
         arr.push('检测合格')
       }
       return arr
@@ -222,7 +303,7 @@ export default {
     playAudio() {
       // Fixfox和chrome不支持自动播放 Edge可以
       let audio = document.getElementById("audioId");
-      if (this.form.detecte === '检测合格') {
+      if (this.form.detecte == '检测合格') {
         audio.src = qualified
       } else {
         audio.src = error
@@ -239,6 +320,9 @@ export default {
   flex-grow: 1;
   justify-content: space-between;
 }
+/* .imgbox{
+  height: auto;
+} */
 .item{
   flex: 1;
   padding-right: 10px;
@@ -253,6 +337,13 @@ export default {
 .row {
   float: left;
   margin:0 2px 2px 0;
+}
+.img {
+  /* width: 70%;
+  height: 50%; */
+  display: block;
+  width: 500px;
+  height: 300px;
 }
 </style>
 
