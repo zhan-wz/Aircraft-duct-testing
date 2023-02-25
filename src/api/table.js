@@ -15,13 +15,20 @@ export function getPic(id) {
   })
 }
 
-export function getLabel(formData) {
+export function getLabel(data) {
   return request({
-    url: `/api/detect`,
-    method: 'get',
-    headers: {
-      'Content-Type': 'multipart/form-data'
-   },
-   data: formData
+    url: `/api/description`,
+    method: 'post',
+    contentType: "application/json",
+    data
+  })
+}
+
+export function getDate(data) {
+  return request({
+    url: `/api/date`,
+    method: 'post',
+    contentType: "application/json",
+    data
   })
 }

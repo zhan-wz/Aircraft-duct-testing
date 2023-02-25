@@ -61,12 +61,14 @@ export default {
     }
   }
 }
+// 上边栏
 </script>
 
 <style lang="scss" scoped>
+
 .app-breadcrumb.el-breadcrumb {
   display: inline-block;
-  font-size: 14px;
+  font-size: 20px;
   line-height: 50px;
   margin-left: 8px;
 

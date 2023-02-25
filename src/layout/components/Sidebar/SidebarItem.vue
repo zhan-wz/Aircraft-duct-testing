@@ -93,3 +93,9 @@ export default {
   }
 }
 </script>
+<style>
+<!--侧边栏-->
+.el-menu-item {
+  font-size: 20px;
+}
+</style>

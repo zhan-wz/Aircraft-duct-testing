@@ -31,17 +31,6 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   redirect: '/dashboard',
-  //   children: [{
-  //     path: 'dashboard',
-  //     name: 'Dashboard',
-  //     component: () => import('@/views/form/index'),
-  //     meta: { title: '检测', icon: 'dashboard' }
-  //   }]
-  // },
   {
     path: '/login',
     component: () => import('@/views/login/index'),
@@ -98,18 +87,18 @@ export const constantRoutes = [
     }]
   },
 
-  // {
-  //   path: '/form',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       name: 'Form',
-  //       component: () => import('@/views/form/index'),
-  //       meta: { title: 'Form', icon: 'form' }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/about',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'About',
+        component: () => import('@/views/404'),
+        meta: { title: '关于', icon: 'form' }
+      }
+    ]
+  },
 
   // {
   //   path: '/nested',
@@ -166,17 +155,6 @@ export const constantRoutes = [
   //       component: () => import('@/views/nested/menu2/index'),
   //       name: 'Menu2',
   //       meta: { title: 'menu2' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: 'external-link',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-  //       meta: { title: 'External Link', icon: 'link' }
   //     }
   //   ]
   // },

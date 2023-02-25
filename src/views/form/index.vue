@@ -11,7 +11,7 @@
       <el-form-item label="原始采样图片">
         <div class="box imgbox">
           <div class="item" v-for="(k,v) in form.oriImg">
-            <el-image :src=k class="item img"></el-image>
+            <el-image :src=k class="item img" :preview-src-list=[k]></el-image>
             <!-- <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
@@ -23,7 +23,7 @@
       <el-form-item label="检测输出图片">
         <div class="box">
           <div class="item" v-for="(k,v) in form.markImg">
-            <el-image :src=k class="item img"></el-image>
+            <el-image :src=k class="item img" :preview-src-list=[k]></el-image>
             <!-- <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
             <el-image :src=img class="item"></el-image>
@@ -91,47 +91,12 @@ export default {
     return {
       img:'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
       form: {
-        // img: [
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-        // ],
-        // img_out: [
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
-        //   'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
-        // ],
         total: 1, //检测工件数
         oriImg: [],
         markImg: [],
         // defectType: ['检测合格','划痕缺陷',['压坑缺陷','裂纹缺陷','腐蚀缺陷','裂纹缺陷'],'腐蚀缺陷','裂纹缺陷'],
         defectType: [],
-        result: [
-          {
-            label: '检测合格',
-            value: '50'
-          },
-          {
-            label: '划痕缺陷',
-            value: '50'
-          },
-          {
-            label: '压坑缺陷',
-            value: '50'
-          },
-          {
-            label: '腐蚀缺陷',
-            value: '50'
-          },
-          {
-            label: '裂纹缺陷',
-            value: '50'
-          }
-        ],
+        result: [],
         detecte: ''
       },
       total: 1,
@@ -342,7 +307,6 @@ export default {
   /* width: 70%;
   height: 50%; */
   display: block;
-  width: 500px;
   height: 300px;
 }
 </style>

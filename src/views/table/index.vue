@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import { getLabel, getList, getPic } from '@/api/table'
+import { getLabel, getList, getPic, getDate } from '@/api/table'
 import { isTSMethodSignature } from '@babel/types'
 import moment from 'moment'
 
@@ -173,7 +173,7 @@ export default {
   watch:{
     // 不监听 后端传参
     datePicker: {
-      handler: 'filterData'
+      handler: 'handleFilterData'
     },
     // labelPicker: {
     //   handler: 'filterLabel'
@@ -223,60 +223,62 @@ export default {
     handleCurrentChange(val) {
       this.page = val
     },
-    // 时间筛选 -- 1/28 完成
-    filterData() {
+    // 时间筛选 -- 1/28 完成 --- 前端实现
+    // filterData() {
+    //   let date = []
+    //   if(this.datePicker) {
+    //     // 筛选日期格式化处理
+    //     this.datePicker.forEach(i => {
+    //       date.push(moment(i).format('YYYY-MM-DD HH:mm:ss')) //"2019-04-13 16:46:40"
+    //     });
+    //     // 动态筛选
+    //     this.list = this.list.filter((i)=>{
+    //       return i.createTime < date[1] && i.createTime > date[0]
+    //     })
+    //   } else {
+    //     this.fetchData()
+    //   }
+    
+    // 时间筛选 ---- 2/25完成 ---- 后端接口实现
+    handleFilterData()  {
       let date = []
       if(this.datePicker) {
         // 筛选日期格式化处理
         this.datePicker.forEach(i => {
           date.push(moment(i).format('YYYY-MM-DD HH:mm:ss')) //"2019-04-13 16:46:40"
         });
-        // 动态筛选
-        this.list = this.list.filter((i)=>{
-          return i.createTime < date[1] && i.createTime > date[0]
+        let jsonDate = JSON.stringify({beginDate: date[0],endDate: date[1]})
+        console.log('===========jsonDate=======',jsonDate);
+        this.listLoading = true
+        getDate(jsonDate).then(res => {
+          console.log('--------res-------',res.data);
+          this.list = res.data
+          this.list.forEach(item => {
+            item.defectType = this.detectFromat(item) 
+            item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
+            console.log('item-------',item);
+            // awiat getPic一下
+          })
+          this.listLoading = false
         })
-      } else {
-        this.fetchData()
       }
-
-      // this.listLoading = true
-      // getList().then(response => {
-      //   // 类别是status status: "压坑缺陷"; 日期是 createTime createTime: "2003-12-22 07:08:57"
-      //   // response.data.items
-      //   console.log("监听日期",);
-      // })
     },
-    // 用户点击了一个缺陷之后 不清空本次搜索 继续多选点击另外一个缺陷
-    // 此时this.list并没有恢复全部数据 而是在第一个缺陷的结果中进行筛选
-    // filterLabel() {
-    //   this.list = this.list.filter((i)=>{
-    //     // console.log('-----i--------',['压坑缺陷'].includes('压坑缺陷'));
-    //     console.log('--label------',this.labelPicker);
-    //     console.log('----------i.defectType------',i.defectType);
-    //     // console.log('----------return------',this.labelPicker.includes(i.defectType));
-    //     console.log('--------------交集-----------',i.defectType.filter(x => this.labelPicker.includes(x)));
-    //     console.log(i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true);
-    //     return i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true      
-    //   })
-
-    //   console.log('标签筛选', this.labelPicker);
-    //   console.log('筛选后的',this.list);
-    // },
 
     // 标签筛选 -- 1/28 完成 （可优化）
-    handleFilter() {
-      this.loadingFilter = true
-      if(this.labelPicker.length !== 0) {
-        this.list = this.list.filter((i)=>{
-          return i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true      
-        })
-      } else {
-        this.fetchData()
-      }
-      this.loadingFilter = false
-    },
+    // handleFilter() {
+    //   this.loadingFilter = true
+    //   if(this.labelPicker.length !== 0) {
+    //     this.list = this.list.filter((i)=>{
+    //       return i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true      
+    //     })
+    //   } else {
+    //     this.fetchData()
+    //   }
+    //   this.loadingFilter = false
+    // },
+    // 
+    // handleFilter()
 
-    /** 
     handleFilter() {
       console.log('========this.labelPicker=======',this.labelPicker);
       let arrLable = []
@@ -298,10 +300,11 @@ export default {
         }
       })
       console.log('========arrLable=======',arrLable);
-      let formData = new FormData();
-      formData.append("defect[]", this.labelPicker);
+      
+      let jsonLable = JSON.stringify({defect: arrLable})
+      console.log('------------jsonLable---------',jsonLable);
       this.listLoading = true
-      getLabel(formData).then(res => {
+      getLabel(jsonLable).then(res => {
         console.log('--------res-------',res.data);
         this.list = res.data
         this.list.forEach(item => {
@@ -313,7 +316,6 @@ export default {
         this.listLoading = false
       })
     }
-    */
   }
 }
 </script>
