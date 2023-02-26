@@ -2,13 +2,19 @@
   <div class="app-container">
     <audio id="audioId" autoplay ></audio> 
     <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item label="检测工件计数">
-        <el-col :span="4">
+      <el-form-item class="el-form-item">
+        <template slot="label">
+          <div class="label">工件计数</div>
+        </template>
+        <el-col :span="4" class="content">
           {{ this.form.total }}
         <!-- {{ form.detecte }} -->
         </el-col>
       </el-form-item>
-      <el-form-item label="原始采样图片">
+      <el-form-item>
+        <template slot="label">
+          <div class="label">采样图片</div>
+        </template>
         <div class="box imgbox">
           <div class="item" v-for="(k,v) in form.oriImg">
             <el-image :src=k class="item img" :preview-src-list=[k]></el-image>
@@ -20,7 +26,10 @@
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="检测输出图片">
+      <el-form-item>
+        <template slot="label">
+          <div class="label">输出图片</div>
+        </template>
         <div class="box">
           <div class="item" v-for="(k,v) in form.markImg">
             <el-image :src=k class="item img" :preview-src-list=[k]></el-image>
@@ -31,9 +40,12 @@
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="检测结果">
+      <el-form-item>
+        <template slot="label">
+          <div class="label">检测结果</div>
+        </template>
         <div class="box">
-          <div class="item" v-for="(k,v) in form.defectType" :key="k">
+          <div class="item content" v-for="(k,v) in form.defectType" :key="k">
             <div v-if="(typeof k === 'string')">
               <el-tag class="tag" :type="k | statusFilter">{{ k }}</el-tag>
             </div>
@@ -43,16 +55,22 @@
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="检测结果计数">
+      <el-form-item>
+        <template slot="label">
+          <div class="label">结果计数</div>
+        </template>
         <div class="box">
-          <div class="item" v-for="(k,v) in form.result" :key="k">
+          <div class="item content" v-for="(k,v) in form.result" :key="k">
             <!-- {{ k.label }} : <el-input-number :value="k.value" :disabled="true"></el-input-number> -->
             {{ k.label }} : {{ k.value }} 次
           </div>
         </div>
       </el-form-item>
-      <el-form-item label="本次检测结果">
-        <el-col :span="4">
+      <el-form-item>
+        <template slot="label">
+          <div class="label">检测结果</div>
+        </template>
+        <el-col :span="4" class="content">
           {{ this.form.detecte }}
         <!-- {{ form.detecte }} -->
       </el-col>
@@ -280,6 +298,9 @@ export default {
 </script>
 
 <style scoped>
+.app-container{
+  background-color: #dee6f0;
+}
 .box{
   display: flex;
   flex-grow: 1;
@@ -296,12 +317,27 @@ export default {
 .line{
   text-align: center;
 }
-.el-form-item {
-    margin-bottom: 10px;
+/* .el-form-item{
+  background-color:#b6d6f7;
+} */
+.label {
+  /* margin-bottom: 5px; */
+  font-size: 18px;
+  font-family:"微软雅黑";
+}
+.content {
+  font-size: 17px;
+  font-family:"STZhongsong";
+}
+.tag{
+  font-size: 17px;
+  font-family:"STZhongsong";
 }
 .row {
   float: left;
   margin:0 2px 2px 0;
+  font-size: 17px;
+  font-family:"STZhongsong";
 }
 .img {
   /* width: 70%;

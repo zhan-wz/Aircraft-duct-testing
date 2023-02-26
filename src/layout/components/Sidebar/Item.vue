@@ -25,7 +25,7 @@ export default {
     }
 
     if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
+      vnodes.push(<span slot='title' class='el-item-menu'>{(title)}</span>)
     }
     return vnodes
   }
@@ -36,6 +36,11 @@ export default {
 .sub-el-icon {
   color: currentColor;
   width: 1em;
-  height: 1em;
+  height: 80px;
+}
+.el-item-menu{
+  height: 80px;
+  line-height: 80px;
+  font-size: 20px;
 }
 </style>
