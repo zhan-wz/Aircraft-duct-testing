@@ -90,6 +90,7 @@ import qualified from '../../../static/audio/检测合格.mp3'
 import error from '../../../static/audio/error.mp3'
 import { MessageBox, Message } from 'element-ui'
 import { getList, getTotal } from '@/api/form'
+import webSocket from '@/utils/websocket'
 
 export default {
   filters: {
@@ -127,6 +128,21 @@ export default {
     this.fetchData()
     this.fetchTotal()
     // this.playAudio()
+    webSocket.webSocketInit('ws://127.0.0.1:8088/websocket')	//初始化webSocket
+    // 按需进行绑定回调函数
+    webSocket.setOpenCallback(res=>{
+        console.log("连接建立成功",res);
+    })
+    webSocket.setMessageCallback(res=>{	
+        // 在此处进行数据刷新操作即可实现数据发生改变时实时更新数据
+        console.log("接收到回信",res);
+    })
+    webSocket.setErrorCallback(res=>{
+        console.log("连接异常",res);
+    })
+    webSocket.setCloseCallback(res=>{
+        console.log("连接关闭",res);
+    })
   },
   mounted() {
     console.log('mounted');
