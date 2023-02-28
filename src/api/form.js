@@ -8,6 +8,14 @@ export function getList(params) {
   })
 }
 
+export function getID(params) {
+  return request({
+    url: '/api/msg',
+    method: 'get',
+    params
+  })
+}
+
 export function getOriPic(id) {
   return request({
     url: `/api/OriImage/${id}`,

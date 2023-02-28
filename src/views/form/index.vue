@@ -89,7 +89,7 @@
 import qualified from '../../../static/audio/检测合格.mp3'
 import error from '../../../static/audio/error.mp3'
 import { MessageBox, Message } from 'element-ui'
-import { getList, getTotal } from '@/api/form'
+import { getList, getID, getTotal } from '@/api/form'
 import webSocket from '@/utils/websocket'
 
 export default {
@@ -118,7 +118,7 @@ export default {
         result: [],
         detecte: ''
       },
-      total: 1,
+      total: 0,
       audio: 1,
       flag: false, // 有缺陷为TRUE
       time: ''
@@ -128,47 +128,49 @@ export default {
     this.fetchData()
     this.fetchTotal()
     // this.playAudio()
-    webSocket.webSocketInit('ws://127.0.0.1:8088/websocket')	//初始化webSocket
-    // 按需进行绑定回调函数
-    webSocket.setOpenCallback(res=>{
-        console.log("连接建立成功",res);
-    })
-    webSocket.setMessageCallback(res=>{	
-        // 在此处进行数据刷新操作即可实现数据发生改变时实时更新数据
-        console.log("接收到回信",res);
-    })
-    webSocket.setErrorCallback(res=>{
-        console.log("连接异常",res);
-    })
-    webSocket.setCloseCallback(res=>{
-        console.log("连接关闭",res);
-    })
+    // webSocket.webSocketInit('ws://127.0.0.1:8088/websocket')	//初始化webSocket
+    // // 按需进行绑定回调函数
+    // webSocket.setOpenCallback(res=>{
+    //     console.log("连接建立成功",res);
+    // })
+    // webSocket.setMessageCallback(res=>{	
+    //     // 在此处进行数据刷新操作即可实现数据发生改变时实时更新数据
+    //     console.log("接收到回信",res);
+    // })
+    // webSocket.setErrorCallback(res=>{
+    //     console.log("连接异常",res);
+    // })
+    // webSocket.setCloseCallback(res=>{
+    //     console.log("连接关闭",res);
+    // })
   },
   mounted() {
     console.log('mounted');
     
     this.time = setInterval(() => {
-      // console.log('我是定时执行');//我是定时执行
-      getList().then(response => {
+      getID().then(response => {
         let data = response.data
-        if(data.length !== 0) {
-          // 普通函数定时器 this 指向 window 拿不到data
-          // 箭头函数定时器 this 依赖外层函数 外层的this指向谁 就是谁
-          // console.log('=========data[0].id----------',data[0].id);
-          // console.log('===========定时器中的 this-----------',this.total);
-          
-          if(data[0].id != this.total) {
-            // this.form.defectType = []
-            // this.form.oriImg = []
-            // this.form.markImg = []
-            // this.form.detecte = ''
-            this.form.total++
-            this.total = data ? data[0].id : 1
-            // console.log('----------新加了任务-----------');
-          }
+        if(data.id !== this.total) {
+          this.form.total++
+          this.total = data.id
         }
       })
-    },1000);
+      // console.log('我是定时执行');//我是定时执行
+      // getList().then(response => {
+      //   let data = response.data
+      //   if(data.length !== 0) {
+      //     if(data[0].id != this.total && data.length == 5) {
+      //       // this.form.defectType = []
+      //       // this.form.oriImg = []
+      //       // this.form.markImg = []
+      //       // this.form.detecte = ''
+      //       this.form.total++
+      //       this.total = data ? data[0].id : 1
+      //       // console.log('----------新加了任务-----------');
+      //     }
+      //   }
+      // })
+    },10000);
   },
   beforeDestroy() {
     console.log('组件销毁前 0000000000000000');
@@ -183,17 +185,26 @@ export default {
       handler(newValue, oldValue){  //newValue 新的值，oldValue变化前的值
         console.log("--------监听数据-- 新数据-------",newValue)
         console.log('------------监听数据 ------------ 老数据----------',oldValue);
-        if(oldValue !== 1){
+        if(oldValue !== 0){
           console.log('-------不是第一次---------');
-          setTimeout(() => {
-            this.form.defectType = []
-            this.form.oriImg = []
-            this.form.markImg = []
-            this.form.detecte = ''
-            this.fetchData()
+          this.form.defectType = []
+          this.form.oriImg = []
+          this.form.markImg = []
+          this.form.detecte = ''
+          this.fetchData()
+          this.flag = false   
             this.flag = false   
-            this.fetchTotal()
-          }, 3000)
+          this.flag = false   
+          this.fetchTotal()
+          // setTimeout(() => {
+          //   this.form.defectType = []
+          //   this.form.oriImg = []
+          //   this.form.markImg = []
+          //   this.form.detecte = ''
+          //   this.fetchData()
+          //   this.flag = false   
+          //   this.fetchTotal()
+          // }, 1000)
           // clearTimeout(setT)
         }
       },
@@ -213,7 +224,7 @@ export default {
         console.log('new接口',response.data);
         if (response.data.length !== 0) {
           let data = response.data
-          this.total = data ? data[0].id : 1
+          // this.total = data ? data[0].id : 1
           this.audio++
           data.forEach(element => {
             this.form.defectType.push(this.detectFromat(element))

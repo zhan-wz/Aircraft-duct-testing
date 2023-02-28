@@ -173,7 +173,7 @@ export default {
   watch:{
     // 不监听 后端传参
     datePicker: {
-      handler: 'handleFilterData'
+      handler: 'filterData'
     },
     // labelPicker: {
     //   handler: 'filterLabel'
@@ -189,7 +189,7 @@ export default {
         this.list = response.data
         this.list.forEach(item => {
           item.defectType = this.detectFromat(item) 
-          item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
+          item.pId = `http://localhost/api/MarkImage/${item.pId}` // this.getPicture(item.pId)
           console.log('item-------',item);
           // awiat getPic一下
         })
@@ -224,98 +224,98 @@ export default {
       this.page = val
     },
     // 时间筛选 -- 1/28 完成 --- 前端实现
-    // filterData() {
-    //   let date = []
-    //   if(this.datePicker) {
-    //     // 筛选日期格式化处理
-    //     this.datePicker.forEach(i => {
-    //       date.push(moment(i).format('YYYY-MM-DD HH:mm:ss')) //"2019-04-13 16:46:40"
-    //     });
-    //     // 动态筛选
-    //     this.list = this.list.filter((i)=>{
-    //       return i.createTime < date[1] && i.createTime > date[0]
-    //     })
-    //   } else {
-    //     this.fetchData()
-    //   }
-    
-    // 时间筛选 ---- 2/25完成 ---- 后端接口实现
-    handleFilterData()  {
+    filterData() {
       let date = []
       if(this.datePicker) {
         // 筛选日期格式化处理
         this.datePicker.forEach(i => {
           date.push(moment(i).format('YYYY-MM-DD HH:mm:ss')) //"2019-04-13 16:46:40"
         });
-        let jsonDate = JSON.stringify({beginDate: date[0],endDate: date[1]})
-        console.log('===========jsonDate=======',jsonDate);
-        this.listLoading = true
-        getDate(jsonDate).then(res => {
-          console.log('--------res-------',res.data);
-          this.list = res.data
-          this.list.forEach(item => {
-            item.defectType = this.detectFromat(item) 
-            item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
-            console.log('item-------',item);
-            // awiat getPic一下
-          })
-          this.listLoading = false
+        // 动态筛选
+        this.list = this.list.filter((i)=>{
+          return i.createTime < date[1] && i.createTime > date[0]
         })
+      } else {
+        this.fetchData()
       }
     },
+    
+    // 时间筛选 ---- 2/25完成 ---- 后端接口实现
+    // handleFilterData()  {
+    //   let date = []
+    //   if(this.datePicker) {
+    //     // 筛选日期格式化处理
+    //     this.datePicker.forEach(i => {
+    //       date.push(moment(i).format('YYYY-MM-DD HH:mm:ss')) //"2019-04-13 16:46:40"
+    //     });
+    //     let jsonDate = JSON.stringify({beginDate: date[0],endDate: date[1]})
+    //     console.log('===========jsonDate=======',jsonDate);
+    //     this.listLoading = true
+    //     getDate(jsonDate).then(res => {
+    //       console.log('--------res-------',res.data);
+    //       this.list = res.data
+    //       this.list.forEach(item => {
+    //         item.defectType = this.detectFromat(item) 
+    //         item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
+    //         console.log('item-------',item);
+    //         // awiat getPic一下
+    //       })
+    //       this.listLoading = false
+    //     })
+    //   }
+    // },
 
     // 标签筛选 -- 1/28 完成 （可优化）
-    // handleFilter() {
-    //   this.loadingFilter = true
-    //   if(this.labelPicker.length !== 0) {
-    //     this.list = this.list.filter((i)=>{
-    //       return i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true      
-    //     })
-    //   } else {
-    //     this.fetchData()
-    //   }
-    //   this.loadingFilter = false
-    // },
-    // 
-    // handleFilter()
-
     handleFilter() {
-      console.log('========this.labelPicker=======',this.labelPicker);
-      let arrLable = []
-      this.labelPicker.forEach(label => {
-        if(label == '划痕缺陷') {
-          arrLable.push('def1')
-        }
-        if(label == '压坑缺陷') {
-          arrLable.push('def2')
-        }
-        if(label == '腐蚀缺陷') {
-          arrLable.push('def3')
-        }
-        if(label == '裂纹缺陷') {
-          arrLable.push('def4')
-        }
-        if(label == '检测合格') {
-          arrLable.push('def0')
-        }
-      })
-      console.log('========arrLable=======',arrLable);
-      
-      let jsonLable = JSON.stringify({defect: arrLable})
-      console.log('------------jsonLable---------',jsonLable);
-      this.listLoading = true
-      getLabel(jsonLable).then(res => {
-        console.log('--------res-------',res.data);
-        this.list = res.data
-        this.list.forEach(item => {
-          item.defectType = this.detectFromat(item) 
-          item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
-          console.log('item-------',item);
-          // awiat getPic一下
+      this.loadingFilter = true
+      if(this.labelPicker.length !== 0) {
+        this.list = this.list.filter((i)=>{
+          return i.defectType.filter(x => this.labelPicker.includes(x)).length == 0 ? false : true      
         })
-        this.listLoading = false
-      })
-    }
+      } else {
+        this.fetchData()
+      }
+      this.loadingFilter = false
+    },
+
+    // 标签筛选 --- 2/27完成（后端调用 有问题）
+    // handleFilter() {
+    //   console.log('========this.labelPicker=======',this.labelPicker);
+    //   let arrLable = []
+    //   this.labelPicker.forEach(label => {
+    //     if(label == '划痕缺陷') {
+    //       arrLable.push('def1')
+    //     }
+    //     if(label == '压坑缺陷') {
+    //       arrLable.push('def2')
+    //     }
+    //     if(label == '腐蚀缺陷') {
+    //       arrLable.push('def3')
+    //     }
+    //     if(label == '裂纹缺陷') {
+    //       arrLable.push('def4')
+    //     }
+    //     if(label == '检测合格') {
+    //       arrLable.push('def0')
+    //     }
+    //   })
+    //   console.log('========arrLable=======',arrLable);
+      
+    //   let jsonLable = JSON.stringify({defect: arrLable})
+    //   console.log('------------jsonLable---------',jsonLable);
+    //   this.listLoading = true
+    //   getLabel(jsonLable).then(res => {
+    //     console.log('--------res-------',res.data);
+    //     this.list = res.data
+    //     this.list.forEach(item => {
+    //       item.defectType = this.detectFromat(item) 
+    //       item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
+    //       console.log('item-------',item);
+    //       // awiat getPic一下
+    //     })
+    //     this.listLoading = false
+    //   })
+    // }
   }
 }
 </script>
@@ -324,5 +324,7 @@ export default {
     width: 246px;
     height: 180px;
     display: block;
+    margin-left: auto; 
+    margin-right: auto;
   }
 </style>
