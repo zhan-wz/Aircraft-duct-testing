@@ -229,8 +229,8 @@ export default {
           this.audio++
           data.forEach(element => {
             this.form.defectType.push(this.detectFromat(element))
-            this.form.oriImg.push(`http://localhost/api/OriImage/${element.pid}`)
-            this.form.markImg.push(`http://localhost/api/MarkImage/${element.pid}`)
+            this.form.oriImg.push(`http://localhost:8080/api/OriImage/${element.pid}`)
+            this.form.markImg.push(`http://localhost:8080/api/MarkImage/${element.pid}`)
           });
           console.log('new返回数据form',this.form);
           this.form.defectType.forEach(item => {

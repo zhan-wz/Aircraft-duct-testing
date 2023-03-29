@@ -11,8 +11,8 @@ const service = axios.create({
   timeout: 10000 // request timeout
 })
 let b = service.defaults.headers.common
-b['Access-Control-Max-Age'] = 1800 // 1800秒后才会发预检请求
-b['Access-Control-Allow-Origin'] = 'http://localhost:8080' // *
+// b['Access-Control-Max-Age'] = 1800 // 1800秒后才会发预检请求
+b['Access-Control-Allow-Origin'] = '*' // *
 // b['Content-Type'] = 'multipart/form-data;boundary=<calculated when request is sent>'
 console.log('--------service---------',service.defaults.headers.common);
 // request interceptor

@@ -189,7 +189,7 @@ export default {
         this.list = response.data
         this.list.forEach(item => {
           item.defectType = this.detectFromat(item) 
-          item.pId = `http://localhost/api/MarkImage/${item.pId}` // this.getPicture(item.pId)
+          item.pId = `http://localhost:8080/api/MarkImage/${item.pId}` // this.getPicture(item.pId)
           console.log('item-------',item);
           // awiat getPic一下
         })
