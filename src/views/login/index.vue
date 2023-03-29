@@ -108,51 +108,54 @@ export default {
       })
     },
     //之前模板的登录入口
-    // handleLogin() {
-    //   this.$refs.loginForm.validate(valid => {
-    //     if (valid) {
-    //       this.loading = true
-    //       this.$store.dispatch('/user/login', this.loginForm).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //         this.loading = false
-    //       }).catch(() => {
-    //         this.loading = false
-    //       })
-    //     } else {
-    //       console.log('error submit!!')
-    //       return false
-    //     }
-    //   })
-    // }
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          // login接口接收Content-Type： multipart/form-data;
           var formData = new FormData();
           formData.append("username", this.loginForm.username.trim());
           formData.append("password", this.loginForm.password);
-          console.log('----formData --------',formData);
-          login(formData).then(response => {
-            if(response.code !== 200) {
-              Message({
-                message: res.message || 'Error',
-                type: 'error',
-                duration: 5 * 1000
-              })
-            } else {
-              this.$router.push({ path: this.redirect || '/' })
-            }
+          this.$store.dispatch('user/login', formData).then(() => {
+            this.$router.push({ path: this.redirect || '/' })
             this.loading = false
           }).catch(() => {
             this.loading = false
           })
         } else {
-          console.log('error submit');
+          console.log('error submit!!')
           return false
         }
       })
     }
+    // handleLogin() {
+    //   this.$refs.loginForm.validate(valid => {
+    //     if (valid) {
+    //       this.loading = true
+    //       // login接口接收Content-Type： multipart/form-data;
+    //       var formData = new FormData();
+    //       formData.append("username", this.loginForm.username.trim());
+    //       formData.append("password", this.loginForm.password);
+    //       console.log('----formData --------',formData);
+    //       login(formData).then(response => {
+    //         if(response.code !== 200) {
+    //           Message({
+    //             message: res.message || 'Error',
+    //             type: 'error',
+    //             duration: 5 * 1000
+    //           })
+    //         } else {
+    //           this.$router.push({ path: this.redirect || '/' })
+    //         }
+    //         this.loading = false
+    //       }).catch(() => {
+    //         this.loading = false
+    //       })
+    //     } else {
+    //       console.log('error submit');
+    //       return false
+    //     }
+    //   })
+    // }
   }
 }
 </script>
