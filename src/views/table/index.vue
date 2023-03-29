@@ -44,7 +44,7 @@
           {{ scope.row.taskId }}
         </template>
       </el-table-column>
-      <el-table-column label="示例图片" align="center">
+      <el-table-column label="采样图片" align="center">
         <template slot-scope="scope">
           <img :src=scope.row.pId class="image" >
           

@@ -170,7 +170,7 @@ export default {
       //     }
       //   }
       // })
-    },10000);
+    },3000);
   },
   beforeDestroy() {
     console.log('组件销毁前 0000000000000000');
@@ -192,8 +192,6 @@ export default {
           this.form.markImg = []
           this.form.detecte = ''
           this.fetchData()
-          this.flag = false   
-            this.flag = false   
           this.flag = false   
           this.fetchTotal()
           // setTimeout(() => {
@@ -220,6 +218,9 @@ export default {
   methods: {
     fetchData() {
       // 处理非检测结果计数
+      getID().then(response => {
+        this.total = response.data.id
+      })
       getList().then(response => {
         console.log('new接口',response.data);
         if (response.data.length !== 0) {
