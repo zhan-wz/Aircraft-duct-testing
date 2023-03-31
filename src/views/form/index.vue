@@ -170,7 +170,7 @@ export default {
       //     }
       //   }
       // })
-    },3000);
+    },2000);
   },
   beforeDestroy() {
     console.log('组件销毁前 0000000000000000');
