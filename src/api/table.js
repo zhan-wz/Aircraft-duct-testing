@@ -8,6 +8,14 @@ export function getList(params) {
   })
 }
 
+// 单个检测任务 返回 5张图片
+export function getListItem(id) {
+  return request({
+    url: `/api/detect/${id}`,
+    method: 'get'
+  })
+}
+
 export function getPic(id) {
   return request({
     url: `/api/OriImage/${id}`,

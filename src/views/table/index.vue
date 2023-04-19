@@ -45,9 +45,11 @@
         </template>
       </el-table-column>
       <el-table-column label="采样图片" align="center">
-        <template slot-scope="scope">
-          <img :src=scope.row.pId class="image" >
-          
+        <template slot-scope="scope" >
+          <div v-for="(k,v) in scope.row.pId" >
+            <el-image :src=k  class="image" :preview-src-list=[k]></el-image>
+          </div>
+          <!-- <img :src=scope.row.pId class="image" > -->
         </template>
       </el-table-column>
       <!-- <el-table-column label="Pageviews" width="110" align="center">
@@ -91,8 +93,7 @@
 </template>
 
 <script>
-import { getLabel, getList, getPic, getDate } from '@/api/table'
-import { isTSMethodSignature } from '@babel/types'
+import { getLabel, getList, getPic, getDate, getListItem } from '@/api/table'
 import moment from 'moment'
 
 export default {
@@ -112,6 +113,7 @@ export default {
   data() {
     return {
       list: null,
+      EveryList: null,
       listLoading: true,
       loadingFilter: false,
       // 日期快捷选择
@@ -182,20 +184,85 @@ export default {
   
   methods: {
     fetchData() {
+      var l = []
+      var pic = []
+      var def = []
       this.listLoading = true
       getList().then(response => {
-        // this.list = response.data.items
-        console.log('返回数据',response);
-        this.list = response.data
-        this.list.forEach(item => {
-          item.defectType = this.detectFromat(item) 
-          item.pId = `http://localhost:8080/api/MarkImage/${item.pId}` // this.getPicture(item.pId)
-          console.log('item-------',item);
+        // this.list = response.data.items        
+        this.EveryList = response.data
+        for (let index = 0; index < this.EveryList.length; index++) {
+          if ( (index+1) % 5 == 0) {
+            getListItem(this.EveryList[index].taskId).then(response => {
+              response.data.forEach( (item,index) => {
+                console.log(index);
+                pic.push(item.pId)
+                def.push(this.detectFromat(item))
+                
+                if (index == 4) {
+                  item.pId = pic
+                  item.defectType = def
+                  pic = []
+                  def = []
+                  l.push(item)
+                }
+              })
+              
+              if(l.length == this.EveryList.length/5) {
+                l.forEach(item => {
+                  item.defectType = item.defectType.flat(Infinity)
+                  item.defectType = Array.from(new Set(item.defectType))
+                  var idpic = []
+                  item.pId.forEach(id => {
+                    idpic.push(`http://localhost:8080/api/MarkImage/${id}`)
+                  })
+                  item.pId = idpic
+                })
+                // this.list = l
+                this.list = l.sort(this.compare('taskId', true))
+                
+                
+                console.log('this.list',this.list);
+
+              }
+            })
+          } 
+        }
+        // 
+        // if(l.length == this.EveryList.length/5) {
+        //   console.log('----------l---------',l);
+        // }
+         
+          // item.defectType = this.detectFromat(item) 
+          // item.pId = [].push`http://localhost:8080/api/MarkImage/${item.pId}` // this.getPicture(item.pId)
+          
           // awiat getPic一下
-        })
+        
         this.listLoading = false
       })
     },
+    // 一个导管放在一行
+    /** 两个参数： 参数1 是排序用的字段， 参数2 是：是否升序排序 true 为升序，false为降序*/
+    compare (attr,rev) {
+      // console.log(attr, rev)
+      if(rev ==  undefined){
+          rev = 1;
+      }else{
+          rev = (rev) ? 1 : -1;
+      }
+      return (a,b) => {
+        a = a[attr];
+        b = b[attr];
+        if(a < b){
+            return rev * -1;
+        }
+        if(a > b){
+            return rev * 1;
+        }
+        return 0;
+      }
+    },
+   
     // 缺陷类型转化
     detectFromat(item) {
       let arr = []
@@ -321,10 +388,12 @@ export default {
 </script>
 <style>
 .image {
-    width: 246px;
-    height: 180px;
     display: block;
-    margin-left: auto; 
-    margin-right: auto;
+    float: left;
+    width: 209.5px;
+    height: 180px;
+    margin-right: 5px;
+    /* margin-left: auto; 
+    margin-right: auto; */
   }
 </style>
