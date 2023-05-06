@@ -3,6 +3,20 @@
     <audio id="audioId" autoplay ></audio> 
     <el-form ref="form" :model="form" label-width="120px">
       <el-form-item class="el-form-item">
+        <el-form-item label="令号">
+          <el-input v-model="form.ling" placeholder="审批人"></el-input>
+        </el-form-item>
+        <el-form-item label="图号">
+          <el-select v-model="form.tu" placeholder="活动区域">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">开始检测</el-button>
+        </el-form-item>
+      </el-form-item>
+      <el-form-item class="el-form-item">
         <template slot="label">
           <div class="label">工件计数</div>
         </template>
@@ -116,7 +130,10 @@ export default {
         // defectType: ['检测合格','划痕缺陷',['压坑缺陷','裂纹缺陷','腐蚀缺陷','裂纹缺陷'],'腐蚀缺陷','裂纹缺陷'],
         defectType: [],
         result: [],
-        detecte: ''
+        detecte: '',
+        ling: '',
+        tu
+
       },
       total: 0,
       audio: 1,
@@ -146,7 +163,25 @@ export default {
   },
   mounted() {
     console.log('mounted');
-    
+    // 消息弹窗
+    this.$prompt('请输入令号', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+      inputErrorMessage: '令号格式不正确'
+    }).then(({ value }) => {
+      this.form.ling = value
+      this.$message({
+        type: 'success',
+        message: '您输入的令号是: ' + value
+      });
+    }).catch(() => {
+      this.$message({
+        type: 'info',
+        message: '取消输入，令号为空将无法进行检测任务'
+      });       
+    });
+
     this.time = setInterval(() => {
       getID().then(response => {
         let data = response.data
@@ -170,7 +205,7 @@ export default {
       //     }
       //   }
       // })
-    },2000);
+    },1000);
   },
   beforeDestroy() {
     console.log('组件销毁前 0000000000000000');
@@ -209,7 +244,7 @@ export default {
       // deep: true
     },
     audio: {
-      handler(newV,oldV) {
+      handler() {
         console.log('-------------监听语音播报---------');
         this.playAudio()
       }
