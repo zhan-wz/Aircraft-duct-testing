@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 
+// 所有检测任务 以图片为单位 每一个对象对应一张图片
 export function getList(params) {
   return request({
     url: '/api/detect',

@@ -168,8 +168,12 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
     this.fetchData()
+  },
+
+  destroyed() {
+    this.list = null
   },
 
   watch:{
@@ -188,14 +192,12 @@ export default {
       var pic = []
       var def = []
       this.listLoading = true
-      getList().then(response => {
-        // this.list = response.data.items        
+      getList().then(response => {       
         this.EveryList = response.data
         for (let index = 0; index < this.EveryList.length; index++) {
           if ( (index+1) % 5 == 0) {
             getListItem(this.EveryList[index].taskId).then(response => {
               response.data.forEach( (item,index) => {
-                console.log(index);
                 pic.push(item.pId)
                 def.push(this.detectFromat(item))
                 
@@ -208,36 +210,24 @@ export default {
                 }
               })
               
+              // 35/5 = 7 处理为 7个导管
               if(l.length == this.EveryList.length/5) {
                 l.forEach(item => {
-                  item.defectType = item.defectType.flat(Infinity)
-                  item.defectType = Array.from(new Set(item.defectType))
+                  item.defectType = item.defectType.flat(Infinity) // 数组拍平
+                  item.defectType = Array.from(new Set(item.defectType)) // 去重
                   var idpic = []
                   item.pId.forEach(id => {
                     idpic.push(`http://localhost:8080/api/MarkImage/${id}`)
                   })
                   item.pId = idpic
                 })
-                // this.list = l
+                // 按照taskId进行排序 从小到大
                 this.list = l.sort(this.compare('taskId', true))
-                
-                
                 console.log('this.list',this.list);
-
               }
             })
           } 
         }
-        // 
-        // if(l.length == this.EveryList.length/5) {
-        //   console.log('----------l---------',l);
-        // }
-         
-          // item.defectType = this.detectFromat(item) 
-          // item.pId = [].push`http://localhost:8080/api/MarkImage/${item.pId}` // this.getPicture(item.pId)
-          
-          // awiat getPic一下
-        
         this.listLoading = false
       })
     },

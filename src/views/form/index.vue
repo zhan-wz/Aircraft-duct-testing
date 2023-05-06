@@ -1,21 +1,30 @@
 <template>
   <div class="app-container">
     <audio id="audioId" autoplay ></audio> 
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-form-item class="el-form-item">
-        <el-form-item label="令号">
-          <el-input v-model="form.ling" placeholder="审批人"></el-input>
-        </el-form-item>
-        <el-form-item label="图号">
-          <el-select v-model="form.tu" placeholder="活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">开始检测</el-button>
-        </el-form-item>
+    <el-form :inline="true" :model="formInline" class="demo-form-inline" label-width="120px">
+      <el-form-item>
+        <template slot="label">
+          <div class="label">令号</div>
+        </template>
+        <el-input v-model="formInline.name" :disabled="true" style="width: 400px;"></el-input>
       </el-form-item>
+      <el-form-item>
+        <template slot="label">
+          <div class="label">图号</div>
+        </template>
+        <el-autocomplete
+          v-model="formInline.state"
+          :fetch-suggestions="querySearchAsync"
+          placeholder="请输入内容"
+          @select="handleSelect"
+          style="width: 400px; margin-right: 100px;"
+        ></el-autocomplete>
+      </el-form-item>
+      <el-form-item >
+        <el-button type="primary" @click="onSubmit">开始检测</el-button>
+      </el-form-item>
+    </el-form>
+    <el-form ref="form" :model="form" label-width="120px">
       <el-form-item class="el-form-item">
         <template slot="label">
           <div class="label">工件计数</div>
@@ -102,9 +111,8 @@
 <script>
 import qualified from '../../../static/audio/检测合格.mp3'
 import error from '../../../static/audio/error.mp3'
-import { MessageBox, Message } from 'element-ui'
-import { getList, getID, getTotal } from '@/api/form'
-import webSocket from '@/utils/websocket'
+import { Message } from 'element-ui'
+import { getList, getID, getTotal, postData } from '@/api/form'
 
 export default {
   filters: {
@@ -130,11 +138,14 @@ export default {
         // defectType: ['检测合格','划痕缺陷',['压坑缺陷','裂纹缺陷','腐蚀缺陷','裂纹缺陷'],'腐蚀缺陷','裂纹缺陷'],
         defectType: [],
         result: [],
-        detecte: '',
-        ling: '',
-        tu
-
+        detecte: ''
       },
+      formInline: {
+        name: '', //令号
+        pname: '', //图号
+        state: '',
+      },      
+      restaurants: [], // 图号数据库
       total: 0,
       audio: 1,
       flag: false, // 有缺陷为TRUE
@@ -144,68 +155,33 @@ export default {
   created(){
     this.fetchData()
     this.fetchTotal()
-    // this.playAudio()
-    // webSocket.webSocketInit('ws://127.0.0.1:8088/websocket')	//初始化webSocket
-    // // 按需进行绑定回调函数
-    // webSocket.setOpenCallback(res=>{
-    //     console.log("连接建立成功",res);
-    // })
-    // webSocket.setMessageCallback(res=>{	
-    //     // 在此处进行数据刷新操作即可实现数据发生改变时实时更新数据
-    //     console.log("接收到回信",res);
-    // })
-    // webSocket.setErrorCallback(res=>{
-    //     console.log("连接异常",res);
-    // })
-    // webSocket.setCloseCallback(res=>{
-    //     console.log("连接关闭",res);
-    // })
   },
   mounted() {
     console.log('mounted');
+    // 拿到图号的数据
+    this.restaurants = this.loadAll();
     // 消息弹窗
-    this.$prompt('请输入令号', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-      inputErrorMessage: '令号格式不正确'
-    }).then(({ value }) => {
-      this.form.ling = value
-      this.$message({
-        type: 'success',
-        message: '您输入的令号是: ' + value
+    // do 从store中取值 
+    if (this.formInline.name == '') {
+      this.$prompt('请输入令号', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+        inputErrorMessage: '令号格式不正确'
+      }).then(({ value }) => {
+        // do 将value存在store中   if 判断store是否有值 消息弹窗弹出
+        this.formInline.name = value
+        this.$message({
+          type: 'success',
+          message: '您输入的令号是: ' + value
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入，令号为空将无法进行检测任务'
+        });       
       });
-    }).catch(() => {
-      this.$message({
-        type: 'info',
-        message: '取消输入，令号为空将无法进行检测任务'
-      });       
-    });
-
-    this.time = setInterval(() => {
-      getID().then(response => {
-        let data = response.data
-        if(data.id !== this.total) {
-          this.form.total++
-          this.total = data.id
-        }
-      })
-      // console.log('我是定时执行');//我是定时执行
-      // getList().then(response => {
-      //   let data = response.data
-      //   if(data.length !== 0) {
-      //     if(data[0].id != this.total && data.length == 5) {
-      //       // this.form.defectType = []
-      //       // this.form.oriImg = []
-      //       // this.form.markImg = []
-      //       // this.form.detecte = ''
-      //       this.form.total++
-      //       this.total = data ? data[0].id : 1
-      //       // console.log('----------新加了任务-----------');
-      //     }
-      //   }
-      // })
-    },1000);
+    }
   },
   beforeDestroy() {
     console.log('组件销毁前 0000000000000000');
@@ -213,49 +189,10 @@ export default {
     this.form.oriImg = []
     this.form.markImg = []
     this.form.detecte = ''
-    clearInterval(this.time);
-  },
-  watch: {
-    total: {
-      handler(newValue, oldValue){  //newValue 新的值，oldValue变化前的值
-        console.log("--------监听数据-- 新数据-------",newValue)
-        console.log('------------监听数据 ------------ 老数据----------',oldValue);
-        if(oldValue !== 0){
-          console.log('-------不是第一次---------');
-          this.form.defectType = []
-          this.form.oriImg = []
-          this.form.markImg = []
-          this.form.detecte = ''
-          this.fetchData()
-          this.flag = false   
-          this.fetchTotal()
-          // setTimeout(() => {
-          //   this.form.defectType = []
-          //   this.form.oriImg = []
-          //   this.form.markImg = []
-          //   this.form.detecte = ''
-          //   this.fetchData()
-          //   this.flag = false   
-          //   this.fetchTotal()
-          // }, 1000)
-          // clearTimeout(setT)
-        }
-      },
-      // deep: true
-    },
-    audio: {
-      handler() {
-        console.log('-------------监听语音播报---------');
-        this.playAudio()
-      }
-    }
   },
   methods: {
+    // 获取最新一次检测任务
     fetchData() {
-      // 处理非检测结果计数
-      getID().then(response => {
-        this.total = response.data.id
-      })
       getList().then(response => {
         console.log('new接口',response.data);
         if (response.data.length !== 0) {
@@ -285,12 +222,80 @@ export default {
             type: 'error'
           })
         }
-        // this.playAudio()
+        // 语音播报
+        this.playAudio()
       })
     },
-    // 定时器
+    // 图号数据
+    loadAll() {
+      return [
+        { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
+        { "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" },
+        { "value": "新旺角茶餐厅", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
+        { "value": "泷千家(天山西路店)", "address": "天山西路438号" },
+        { "value": "胖仙女纸杯蛋糕（上海凌空店）", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
+        { "value": "贡茶", "address": "上海市长宁区金钟路633号" },
+        { "value": "豪大大香鸡排超级奶爸", "address": "上海市嘉定区曹安公路曹安路1685号" },
+        { "value": "茶芝兰（奶茶，手抓饼）", "address": "上海市普陀区同普路1435号" },
+        { "value": "十二泷町", "address": "上海市北翟路1444弄81号B幢-107" },
+        { "value": "星移浓缩咖啡", "address": "上海市嘉定区新郁路817号" },
+        { "value": "阿姨奶茶/豪大大", "address": "嘉定区曹安路1611号" },
+        { "value": "新麦甜四季甜品炸鸡", "address": "嘉定区曹安公路2383弄55号" },
+        { "value": "Monica摩托主题咖啡店", "address": "嘉定区江桥镇曹安公路2409号1F，2383弄62号1F" },
+        { "value": "浮生若茶（凌空soho店）", "address": "上海长宁区金钟路968号9号楼地下一层" },
+        { "value": "NONO JUICE  鲜榨果汁", "address": "上海市长宁区天山西路119号" },
+        { "value": "CoCo都可(北新泾店）", "address": "上海市长宁区仙霞西路" },
+        { "value": "快乐柠檬（神州智慧店）", "address": "上海市长宁区天山西路567号1层R117号店铺" },
+        { "value": "Merci Paul cafe", "address": "上海市普陀区光复西路丹巴路28弄6号楼819" },
+        { "value": "猫山王（西郊百联店）", "address": "上海市长宁区仙霞西路88号第一层G05-F01-1-306" },
+        { "value": "枪会山", "address": "上海市普陀区棕榈路" },
+        { "value": "纵食", "address": "元丰天山花园(东门) 双流路267号" },
+        { "value": "钱记", "address": "上海市长宁区天山西路" },
+        { "value": "壹杯加", "address": "上海市长宁区通协路" },
+        { "value": "唦哇嘀咖", "address": "上海市长宁区新泾镇金钟路999号2幢（B幢）第01层第1-02A单元" },
+        { "value": "爱茜茜里(西郊百联)", "address": "长宁区仙霞西路88号1305室" },
+        { "value": "爱茜茜里(近铁广场)", "address": "上海市普陀区真北路818号近铁城市广场北区地下二楼N-B2-O2-C商铺" },
+        { "value": "鲜果榨汁（金沙江路和美广店）", "address": "普陀区金沙江路2239号金沙和美广场B1-10-6" },
+        { "value": "开心丽果（缤谷店）", "address": "上海市长宁区威宁路天山路341号" },
+        { "value": "超级鸡车（丰庄路店）", "address": "上海市嘉定区丰庄路240号" },
+        { "value": "妙生活果园（北新泾店）", "address": "长宁区新渔路144号" },
+        { "value": "香宜度麻辣香锅", "address": "长宁区淞虹路148号" },
+        { "value": "凡仔汉堡（老真北路店）", "address": "上海市普陀区老真北路160号" },
+        { "value": "港式小铺", "address": "上海市长宁区金钟路968号15楼15-105室" },
+        { "value": "蜀香源麻辣香锅（剑河路店）", "address": "剑河路443-1" },
+        { "value": "北京饺子馆", "address": "长宁区北新泾街道天山西路490-1号" },
+        { "value": "饭典*新简餐（凌空SOHO店）", "address": "上海市长宁区金钟路968号9号楼地下一层9-83室" },
+        { "value": "焦耳·川式快餐（金钟路店）", "address": "上海市金钟路633号地下一层甲部" },
+        { "value": "动力鸡车", "address": "长宁区仙霞西路299弄3号101B" },
+        { "value": "浏阳蒸菜", "address": "天山西路430号" },
+        { "value": "四海游龙（天山西路店）", "address": "上海市长宁区天山西路" },
+        { "value": "樱花食堂（凌空店）", "address": "上海市长宁区金钟路968号15楼15-105室" },
+        { "value": "壹分米客家传统调制米粉(天山店)", "address": "天山西路428号" },
+        { "value": "福荣祥烧腊（平溪路店）", "address": "上海市长宁区协和路福泉路255弄57-73号" },
+        { "value": "速记黄焖鸡米饭", "address": "上海市长宁区北新泾街道金钟路180号1层01号摊位" },
+        { "value": "红辣椒麻辣烫", "address": "上海市长宁区天山西路492号" },
+        { "value": "(小杨生煎)西郊百联餐厅", "address": "长宁区仙霞西路88号百联2楼" },
+        { "value": "阳阳麻辣烫", "address": "天山西路389号" },
+        { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
+      ];
+    },
+    // 模糊搜索
+    querySearchAsync(queryString, cb) {
+      var restaurants = this.restaurants;
+      var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
+      cb(results);
+    },
+    createStateFilter(queryString) {
+      return (state) => {
+        return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) > -1);
+      };
+    },
+    handleSelect(item) {
+      this.formInline.pname = item.value
+      console.log('令号，图号',this.formInline);
+    },
     
-    // 处理结果计数
+    // 处理检测结果计数
     fetchTotal() {
       getTotal().then(response => {
         console.log('total接口', response.data);
@@ -338,13 +343,48 @@ export default {
       return arr
     },
     onSubmit() {
-      this.$message('submit!')
-    },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
+      if (this.formInline.name != '' && this.formInline.pname != '') {
+        this.$message({
+          message: '令号，图号 提交成功!',
+          type: 'success'
+        })
+        var formData = new FormData();
+        formData.append("name", this.formInline.name);
+        formData.append("pname", this.formInline.pname);
+        postData(formData).then(response => {
+          if(response.status == 200){
+            // 图号 令号 发送成功
+            // 检测前 先清空上一次的form数据
+            this.form.defectType = []
+            this.form.oriImg = []
+            this.form.markImg = []
+            this.form.detecte = ''
+            // 开始检测 获取最新一次的检测数据
+            setTimeout(() => {
+              this.fetchData()
+              this.fetchTotal() // 得到result 检测结果计数
+            },3000) 
+            this.total++
+            // 监听最新检测任务  不需要了
+            /**
+             * this.time = setInterval(() => {
+              getID().then(response => {
+                let data = response.data
+                if(data.id !== this.total) {
+                  this.form.total++
+                  this.total = data.id
+                }
+              })
+            },1000);
+            */
+          }
+        })
+      } else {
+        this.$message({
+        message: '请检查令号和图号格式!',
+        type: 'error'
       })
+      }
     },
     playAudio() {
       // Fixfox和chrome不支持自动播放 Edge可以
@@ -385,7 +425,7 @@ export default {
 } */
 .label {
   /* margin-bottom: 5px; */
-  font-size: 18px;
+  font-size: 17px;
   font-family:"微软雅黑";
 }
 .content {
@@ -407,6 +447,9 @@ export default {
   height: 50%; */
   display: block;
   height: 300px;
+}
+.el-form-item {
+  margin-bottom: 12px;
 }
 </style>
 

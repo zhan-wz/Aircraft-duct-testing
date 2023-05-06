@@ -37,3 +37,15 @@ export function getTotal(params) {
     params
   })
 }
+
+// 开始检测
+export function postData(data) {
+  return request({
+    url: `/api/name`,
+    method: 'post',
+    contentType: "application/json",
+    data
+  })
+}
+
+// 获取所有图号
