@@ -161,15 +161,16 @@ export default {
     // 拿到图号的数据
     this.restaurants = this.loadAll();
     // 消息弹窗
-    // do 从store中取值 
-    if (this.formInline.name == '') {
+    //从store中取值 
+    if (this.$store.state.form.tname == '') {
       this.$prompt('请输入令号', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
         inputErrorMessage: '令号格式不正确'
       }).then(({ value }) => {
-        // do 将value存在store中   if 判断store是否有值 消息弹窗弹出
+        //将value存在store中   if 判断store是否有值 消息弹窗弹出
+        this.$store.commit("SET_NAME",value)
         this.formInline.name = value
         this.$message({
           type: 'success',
@@ -181,6 +182,8 @@ export default {
           message: '取消输入，令号为空将无法进行检测任务'
         });       
       });
+    } else {
+      this.formInline.name = value
     }
   },
   beforeDestroy() {
