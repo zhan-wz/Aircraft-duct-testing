@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="block" style="margin: 0 8px 20px 8px ; ">
       <!--类别筛选-->
-      <el-select v-model="labelPicker" multiple placeholder="请选择检测类别, 支持多选" style="padding-right:20px; width: 500px;">
+      <el-select v-model="labelPicker" multiple placeholder="请选择检测类别, 支持多选" style="padding-right:20px; width: 400px;">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -10,6 +10,20 @@
           :value="item.value">
         </el-option>
       </el-select>
+      <el-autocomplete
+        v-model="name"
+        :fetch-suggestions="queryNameSearchAsync"
+        placeholder="请输入令号"
+        @select="handleNameSelect"
+        style="width: 255px;margin-right: 20px;"
+      ></el-autocomplete>
+      <el-autocomplete
+        v-model="pname"
+        :fetch-suggestions="queryPnameSearchAsync"
+        placeholder="请输入图号"
+        @select="handlePnameSelect"
+        style="width: 255px;margin-right: 20px;"
+      ></el-autocomplete>
       <el-button type="primary" icon="el-icon-search" :loading="loadingFilter" @click="handleFilter">查询</el-button>
 
       <div style="float:right;"> 
@@ -144,6 +158,10 @@ export default {
           }
           }]
       },
+      name: '', // 令号 从数据库中拿
+      pname: '', // 图号 从数据库中拿
+      nameResult: [],
+      pnameResult: [],
       datePicker: '',
       // 标签选项
       options: [{
@@ -170,6 +188,9 @@ export default {
 
   mounted() {
     this.fetchData()
+    // 拿到令号数据
+    this.nameResult = this.loadAllName();
+    this.pnameResult = this.loadAllPname();
   },
 
   destroyed() {
@@ -273,6 +294,65 @@ export default {
       }
       return arr
     },
+    /**
+     * 令号查询
+     */
+    // 所有令号号数据
+    loadAllName() {
+      return [
+        { "value": "红辣椒麻辣烫", "address": "上海市长宁区天山西路492号" },
+        { "value": "西郊百联餐厅", "address": "长宁区仙霞西路88号百联2楼" },
+        { "value": "阳阳麻辣烫", "address": "天山西路389号" },
+        { "value": "南拳妈妈龙虾盖浇饭", "address": "普陀区金沙江路1699号鑫乐惠美食广场A13" }
+      ];
+    },
+    // 令号模糊搜索
+    queryNameSearchAsync(queryString, cb) {
+      var nameResult = this.nameResult;
+      var totalResult = queryString ? nameResult.filter(this.createNameStateFilter(queryString)) : nameResult
+      cb(totalResult) // 下拉显示的菜单项
+    }, 
+    createNameStateFilter(queryString) {
+      return (name) => {
+        return (name.value.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
+      }
+    },
+    handleNameSelect(item) {
+      this.name = item.value
+      console.log("要查询的令号",this.name);
+    },
+    /**
+     * 图号查询
+     */
+    // 所有图号数据
+    loadAllPname() {
+      return [
+        { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
+        { "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" },
+        { "value": "新旺角茶餐厅", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
+        { "value": "泷千家(天山西路店)", "address": "天山西路438号" },
+        { "value": "胖仙女纸杯蛋糕（上海凌空店）", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
+        { "value": "贡茶", "address": "上海市长宁区金钟路633号" },
+        { "value": "豪大大香鸡排超级奶爸", "address": "上海市嘉定区曹安公路曹安路1685号" },
+        { "value": "茶芝兰（奶茶，手抓饼）", "address": "上海市普陀区同普路1435号" }
+      ]
+    },
+    // 图号模糊搜索
+    queryPnameSearchAsync(queryString, cb) {
+      var pnameResult = this.pnameResult;
+      var totalPResult = queryString ? pnameResult.filter(this.createPnameStateFilter(queryString)) : pnameResult
+      cb(totalPResult)
+    },
+    handlePnameSelect(item) {
+      this.pname = item.value
+      console.log('要查询的图号',this.pname);
+    },
+    createPnameStateFilter(queryString) {
+      return (name) => {
+        return (name.value.toLowerCase().indexOf(queryString.toLowerCase()) > -1)
+      }
+    },
+    
     // 分页 -- 1/28 完成
     handleSizeChange(val) {
       this.pageSize = val

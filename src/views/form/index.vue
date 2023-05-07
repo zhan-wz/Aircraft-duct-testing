@@ -15,7 +15,7 @@
         <el-autocomplete
           v-model="formInline.state"
           :fetch-suggestions="querySearchAsync"
-          placeholder="请输入内容"
+          placeholder="请输入图号"
           @select="handleSelect"
           style="width: 400px; margin-right: 100px;"
         ></el-autocomplete>
@@ -352,7 +352,7 @@ export default {
         formData.append("name", this.formInline.name);
         formData.append("pname", this.formInline.pname);
         postData(formData).then(response => {
-          if(response.status == 200){
+          if(response.code == 200){
             // 图号 令号 发送成功
             // 检测前 先清空上一次的form数据
             this.form.defectType = []
