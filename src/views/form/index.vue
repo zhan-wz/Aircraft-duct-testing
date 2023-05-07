@@ -183,7 +183,7 @@ export default {
         });       
       });
     } else {
-      this.formInline.name = value
+      this.formInline.name = this.$store.state.form.tname
     }
   },
   beforeDestroy() {
