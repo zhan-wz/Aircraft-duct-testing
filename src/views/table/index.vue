@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="block" style="margin: 0 8px 20px 8px ; ">
       <!--类别筛选-->
-      <el-select v-model="labelPicker" multiple placeholder="请选择检测类别, 支持多选" style="padding-right:20px; width: 400px;">
+      <el-select v-model="labelPicker" multiple placeholder="请选择检测类别, 支持多选" style="width: 395px; margin-right: 15px;">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -10,21 +10,22 @@
           :value="item.value">
         </el-option>
       </el-select>
+      <el-button el-button type="primary" icon="el-icon-search" :loading="loadingFilter" @click="handleFilter">查询</el-button>
       <el-autocomplete
         v-model="name"
         :fetch-suggestions="queryNameSearchAsync"
         placeholder="请输入令号"
         @select="handleNameSelect"
-        style="width: 255px;margin-right: 20px;"
+        style="width: 255px;margin-right: 15px; margin-left: 25px;"
       ></el-autocomplete>
       <el-autocomplete
         v-model="pname"
         :fetch-suggestions="queryPnameSearchAsync"
         placeholder="请输入图号"
         @select="handlePnameSelect"
-        style="width: 255px;margin-right: 20px;"
+        style="width: 255px;margin-right: 15px;"
       ></el-autocomplete>
-      <el-button type="primary" icon="el-icon-search" :loading="loadingFilter" @click="handleFilter">查询</el-button>
+      <el-button type="success" icon="el-icon-circle-close" :loading="loadingClearFilter" @click="handleClearFilter">重置</el-button>
 
       <div style="float:right;"> 
         <!--时间日期筛选-->
@@ -130,6 +131,7 @@ export default {
       EveryList: null,
       listLoading: true,
       loadingFilter: false,
+      loadingClearFilter: false,
       // 日期快捷选择
       pickerOptions: {
         shortcuts: [{
@@ -333,6 +335,15 @@ export default {
     handleNameSelect(item) {
       this.name = item.value
       console.log("要查询的令号",this.name);
+      this.loadingFilter = true
+      if(this.name.length !== 0) {
+        this.list = this.list.filter((i)=>{
+          return i.batch == this.name     
+        })
+      } else {
+        this.fetchData()
+      }
+      this.loadingFilter = false
     },
     /**
      * 图号查询
@@ -346,6 +357,15 @@ export default {
     handlePnameSelect(item) {
       this.pname = item.value
       console.log('要查询的图号',this.pname);
+      this.loadingFilter = true
+      if(this.pname.length !== 0) {
+        this.list = this.list.filter((i)=>{
+          return i.pName == this.pname     
+        })
+      } else {
+        this.fetchData()
+      }
+      this.loadingFilter = false
     },
     createPnameStateFilter(queryString) {
       return (name) => {
@@ -414,7 +434,18 @@ export default {
       }
       this.loadingFilter = false
     },
-
+    // 重置
+    handleClearFilter() {
+      this.loadingClearFilter = true
+      // 获取所有数据
+      this.list = this.fetchData()
+      // 清空所有筛选条件
+      // this.labelPicker = []
+      this.name = '',
+      this.pname = '',
+      // this.datePicker = []
+      this.loadingClearFilter = false
+    }
     // 标签筛选 --- 2/27完成（后端调用 有问题）
     // handleFilter() {
     //   console.log('========this.labelPicker=======',this.labelPicker);
