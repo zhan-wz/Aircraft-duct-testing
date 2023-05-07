@@ -21,7 +21,7 @@
         ></el-autocomplete>
       </el-form-item>
       <el-form-item >
-        <el-button type="primary" @click="onSubmit">开始检测</el-button>
+        <el-button type="primary" @click="onSubmit">上传</el-button>
       </el-form-item>
     </el-form>
     <el-form ref="form" :model="form" label-width="120px">
@@ -132,7 +132,7 @@ export default {
     return {
       img:'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
       form: {
-        total: 1, //检测工件数
+        total: this.$store.state.form.total, //检测工件数
         oriImg: [],
         markImg: [],
         // defectType: ['检测合格','划痕缺陷',['压坑缺陷','裂纹缺陷','腐蚀缺陷','裂纹缺陷'],'腐蚀缺陷','裂纹缺陷'],
@@ -146,7 +146,6 @@ export default {
         state: '',
       },      
       restaurants: [], // 图号数据库
-      total: 0,
       audio: 1,
       flag: false, // 有缺陷为TRUE
       time: ''
@@ -367,7 +366,8 @@ export default {
               this.fetchData()
               this.fetchTotal() // 得到result 检测结果计数
             },3000) 
-            this.total++
+            this.$store.commit("SET_TOTAL") // 检测工件数+1 
+            this.form.total = this.$store.state.form.total
             // 监听最新检测任务  不需要了
             /**
              * this.time = setInterval(() => {

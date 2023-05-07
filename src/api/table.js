@@ -41,3 +41,19 @@ export function getDate(data) {
     data
   })
 }
+
+// 查看所有的图号 
+export function getPname(id) {
+  return request({
+    url: `/api/pname`,
+    method: 'get'
+  })
+}
+
+// 获取所有的令号
+export function getName(id) {
+  return request({
+    url: `/api/batch`,
+    method: 'get'
+  })
+}

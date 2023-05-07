@@ -1,7 +1,8 @@
 
 const getDefaultState = () => {
     return {
-        tname: ''
+        tname: '',
+        total: 1
     }
 }
 
@@ -10,6 +11,9 @@ const state = getDefaultState()
 const mutations = {
     SET_NAME: (state, tname) => {
         state.tname = tname
+    },
+    SET_TOTAL: (state) => {
+        state.total++
     }
 }
 
