@@ -341,7 +341,8 @@ export default {
         })
         var formData = new FormData();
         formData.append("name", this.formInline.name);
-        formData.append("pname", this.formInline.pname);
+        formData.append("pname", this.formInline.state);
+        console.log("formInline",this.formInline);
         postData(formData).then(response => {
           if(response.code == 200){
             // 图号 令号 上传成功
