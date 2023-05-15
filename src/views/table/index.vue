@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { getLabel, getList, getPic, getDate, getListItem, getName, getPname } from '@/api/table'
+import { getLabel, getList, getPic, getDate, getListItem, getName, getPname, getRead } from '@/api/table'
 import moment from 'moment'
 
 export default {
@@ -215,7 +215,7 @@ export default {
         if(response.code == 200) {
           let list = response.data
           list.forEach((item, index)=>{
-						item.value = list[index].name
+						item.value = list[index].Value
 					})
           this.nameResult = list
         }
@@ -225,11 +225,14 @@ export default {
         if(response.code == 200) {
           let list = response.data
           list.forEach((item, index)=>{
-						item.value = list[index].pName
+						item.value = list[index].Value
 					})
           this.pnameResult = list
         }
       })
+      // getRead().then(res => {
+      //   console.log(res);
+      // })
     },
     
     fetchData() {

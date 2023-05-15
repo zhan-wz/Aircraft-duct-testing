@@ -112,7 +112,7 @@
 import qualified from '../../../static/audio/检测合格.mp3'
 import error from '../../../static/audio/error.mp3'
 import { Message } from 'element-ui'
-import { getList, getID, getTotal, postData } from '@/api/form'
+import { getList, getID, getTotal, postData, getPname } from '@/api/form'
 
 export default {
   filters: {
@@ -255,20 +255,30 @@ export default {
       })
     },
     // 图号数据
-    loadAll() {
-      return [
-        { "value": "1", "address": "长宁区新渔路144号" },
-        { "value": "2HB--223", "address": "上海市长宁区淞虹路661号" },
-        { "value": "3JK-sa", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
-        { "value": "HBK-ui-98", "address": "天山西路438号" },
-        { "value": "89", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
-        { "value": "HBK-ssui-98", "address": "上海市长宁区金钟路633号" },
-        { "value": "KOASd", "address": "上海市嘉定区曹安公路曹安路1685号" },
-        { "value": "H6K-5107-010-18", "address": "上海市普陀区同普路1435号" },
-        { "value": "H6K-5207-010-18", "address": "上海市北翟路1444弄81号B幢-107" },
-        { "value": "H6K-5307-010-18", "address": "上海市嘉定区新郁路817号" },
-        { "value": "H6K-5407-010-18", "address": "嘉定区曹安路1611号" }
-      ];
+    loadAll(){
+      getPname().then(res => {
+        if(res.code == 200){
+          // console.log("res--------",res);
+          let result = []
+          res.list.forEach((item) => {
+            result.push({value: item})
+          })
+          this.restaurants = result
+          return result
+        }
+      })
+      // return [
+      //   { "value": "H6K-5601-010-0-0", "address": "上海市长宁区淞虹路661号" },
+      //   { "value": "H6K-5601-010-0-1", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
+      //   { "value": "H6K-5601-010-0-2", "address": "天山西路438号" },
+      //   { "value": "H6K-5602-010-0-0", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
+      //   { "value": "H6K-5603-010-0-0", "address": "上海市长宁区金钟路633号" },
+      //   { "value": "H6K-5604-010-0-0", "address": "上海市嘉定区曹安公路曹安路1685号" },
+      //   { "value": "H6K-5605-010-0-0", "address": "上海市普陀区同普路1435号" },
+      //   { "value": "H6K-5606-010-0-0", "address": "上海市北翟路1444弄81号B幢-107" },
+      //   { "value": "H6K-5607-010-0-0", "address": "上海市嘉定区新郁路817号" },
+      //   { "value": "H6K-5608-010-0-0", "address": "嘉定区曹安路1611号" }
+      // ];
     },
     // 模糊搜索
     querySearchAsync(queryString, cb) {

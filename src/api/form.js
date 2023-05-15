@@ -49,3 +49,9 @@ export function postData(data) {
 }
 
 // 获取所有图号
+export function getPname() {
+  return request({
+    url: `/api/read`,
+    method: 'get'
+  })
+}

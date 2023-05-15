@@ -50,6 +50,13 @@ export function getPname(id) {
   })
 }
 
+export function getRead() {
+  return request({
+    url: `/api/read`,
+    method: 'get'
+  })
+}
+
 // 获取所有的令号
 export function getName(id) {
   return request({
