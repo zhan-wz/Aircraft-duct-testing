@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(formData) {
   return request({
-    url: '/api/login',
+    url: 'http://localhost:9528/dev-api/vue-admin-template/user/login',
     method: 'POST',
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -21,7 +21,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/api/logout',
+    url: 'http://localhost:9528/dev-api/vue-admin-template/user/logout',
     method: 'get'
   })
 }

@@ -31,11 +31,6 @@ import Layout from '@/layout'
  * all roles can be accessed
  */
 export const constantRoutes = [
-  {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
 
   {
     path: '/404',
@@ -50,7 +45,7 @@ export const constantRoutes = [
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
-      component: () => import('@/views/form/index'),
+      component: () => import('@/views/dashboard/index'),
       meta: { title: '检测', icon: 'dashboard' }
     }]
   },
