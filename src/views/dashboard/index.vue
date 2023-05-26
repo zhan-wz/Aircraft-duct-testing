@@ -41,11 +41,6 @@
         <div class="box imgbox">
           <div class="item" v-for="(k,v) in form.oriImg">
             <el-image :src=k class="item img" :preview-src-list=[k]></el-image>
-            <!-- <el-image :src=img class="item"></el-image>
-            <el-image :src=img class="item"></el-image>
-            <el-image :src=img class="item"></el-image>
-            <el-image :src=img class="item"></el-image>
-            <el-image :src=img class="item"></el-image> -->
           </div>
         </div>
       </el-form-item>
@@ -56,10 +51,6 @@
         <div class="box">
           <div class="item" v-for="(k,v) in form.markImg">
             <el-image :src=k class="item img" :preview-src-list=[k]></el-image>
-            <!-- <el-image :src=img class="item"></el-image>
-            <el-image :src=img class="item"></el-image>
-            <el-image :src=img class="item"></el-image>
-            <el-image :src=img class="item"></el-image> -->
           </div>
         </div>
       </el-form-item>
@@ -111,8 +102,27 @@
 <script>
 import qualified from '../../../static/audio/检测合格.mp3'
 import error from '../../../static/audio/error.mp3'
-import { Message } from 'element-ui'
-import { getList, getID, getTotal, postData, getPname } from '@/api/form'
+import myImg1 from '../../../static/img/1.jpg'
+import myImg2 from '../../../static/img/2.jpg'
+import myImg3 from '../../../static/img/3.jpg'
+import myImg4 from '../../../static/img/4.jpg'
+import myImg5 from '../../../static/img/5.jpg'
+import myImg6 from '../../../static/img/6.jpg'
+import myImg7 from '../../../static/img/7.jpg'
+import myImg8 from '../../../static/img/8.jpg'
+import myImg9 from '../../../static/img/9.jpg'
+import myImg10 from '../../../static/img/10.jpg'
+
+import myImgout1 from '../../../static/img_out/1.png'
+import myImgout2 from '../../../static/img_out/2.png'
+import myImgout3 from '../../../static/img_out/3.png'
+import myImgout4 from '../../../static/img_out/4.png'
+import myImgout5 from '../../../static/img_out/5.png'
+import myImgout6 from '../../../static/img_out/6.png'
+import myImgout7 from '../../../static/img_out/7.png'
+import myImgout8 from '../../../static/img_out/8.png'
+import myImgout9 from '../../../static/img_out/9.png'
+import myImgout10 from '../../../static/img_out/10.png'
 
 export default {
   filters: {
@@ -132,13 +142,13 @@ export default {
     return {
       img:'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png',
       form: {
-        total: this.$store.state.form.total, //检测工件数
-        oriImg: [],
-        markImg: [],
+        total: 1, //检测工件数
+        oriImg: [myImg1,myImg2,myImg3,myImg4,myImg5],
+        markImg: [myImgout1,myImgout2,myImgout3,myImgout4,myImgout5],
         // defectType: ['检测合格','划痕缺陷',['压坑缺陷','裂纹缺陷','腐蚀缺陷','裂纹缺陷'],'腐蚀缺陷','裂纹缺陷'],
-        defectType: [],
-        result: [],
-        detecte: ''
+        defectType: ['划痕缺陷','划痕缺陷','划痕缺陷','划痕缺陷','压坑缺陷'],
+        result: [{label:'划痕缺陷',value: 4},{label:'压坑缺陷',value: 1}],
+        detecte: '工件有缺陷'
       },
       formInline: {
         name: '', //令号
@@ -152,34 +162,15 @@ export default {
       time: '' // 定时器
     }
   },
-  created(){
-    this.fetchData()
-    this.fetchTotal()
-  },
+  
   watch: {
-    id: {
-      handler(newValue, oldValue) {
-        if (oldValue !== 0) {
-          this.form.defectType = []
-          this.form.oriImg = []
-          this.form.markImg = []
-          this.form.detecte = ''
-          this.fetchData()
-          this.flag = false // 在这一步将flase置为false
-          this.fetchTotal()
-
-          // 数据获取完了 且 更新展示在页面了 清空定时器
-          clearInterval(this.time)
-        }
-      }
-    },
+    
     audio(newV, oldV) {
       // 语音播报
       this.playAudio()
     }
   },
   mounted() {
-    console.log('mounted');
     // 拿到图号的数据
     this.restaurants = this.loadAll();
     // 消息弹窗
@@ -218,67 +209,39 @@ export default {
   methods: {
     // 数据刷新获取
     fetchData() {
-      // 改变最新的ID
-      getID().then(res => {
-        this.id = res.data.id
-      })
       // 获取最新一次检测任务
-      getList().then(response => {
-        console.log('new接口',response.data);
-        if (response.data.length !== 0) {
-          let data = response.data
-          // this.total = data ? data[0].id : 1
-          this.audio++
-          data.forEach(element => {
-            this.form.defectType.push(this.detectFromat(element))
-            this.form.oriImg.push(`http://localhost:8080/api/OriImage/${element.pid}`)
-            this.form.markImg.push(`http://localhost:8080/api/MarkImage/${element.pid}`)
-          });
-          console.log('new返回数据form',this.form);
-          this.form.defectType.forEach(item => {
-            if(item[0] == '划痕缺陷'|| item[0] == '压坑缺陷' || item[0] == '腐蚀缺陷' || item[0] == '裂纹缺陷') {
-              this.flag = true
-            }
-          })
-          if(this.flag) {
-            this.form.detecte = '工件有缺陷'
-          } else {
-            this.form.detecte = '检测合格'
-            this.flag = false
-          }
-        } else {
-          Message({
-            message: '检测算法还未处理完成，请稍后刷新数据',
-            type: 'error'
-          })
+      // this.total = data ? data[0].id : 1
+      this.audio++
+      this.form.oriImg = [myImg6,myImg7,myImg8,myImg9,myImg10]
+      this.form.markImg = [myImgout6,myImgout7,myImgout8,myImgout9,myImgout10]
+      this.form.defectType = ['压坑缺陷','压坑缺陷','压坑缺陷','划痕缺陷','划痕缺陷']
+      this.form.result = [{label:'划痕缺陷',value: 2},{label:'压坑缺陷',value: 3}],
+      this.form.defectType.forEach(item => {
+        if(item == '划痕缺陷'|| item == '压坑缺陷' || item == '腐蚀缺陷' || item == '裂纹缺陷') {
+          this.flag = true
         }
       })
+      if(this.flag) {
+        this.form.detecte = '工件有缺陷'
+      } else {
+        this.form.detecte = '检测合格'
+        this.flag = false
+      }
     },
     // 图号数据
     loadAll(){
-      getPname().then(res => {
-        if(res.code == 200){
-          // console.log("res--------",res);
-          let result = []
-          res.list.forEach((item) => {
-            result.push({value: item})
-          })
-          this.restaurants = result
-          return result
-        }
-      })
-      // return [
-      //   { "value": "H6K-5601-010-0-0", "address": "上海市长宁区淞虹路661号" },
-      //   { "value": "H6K-5601-010-0-1", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
-      //   { "value": "H6K-5601-010-0-2", "address": "天山西路438号" },
-      //   { "value": "H6K-5602-010-0-0", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
-      //   { "value": "H6K-5603-010-0-0", "address": "上海市长宁区金钟路633号" },
-      //   { "value": "H6K-5604-010-0-0", "address": "上海市嘉定区曹安公路曹安路1685号" },
-      //   { "value": "H6K-5605-010-0-0", "address": "上海市普陀区同普路1435号" },
-      //   { "value": "H6K-5606-010-0-0", "address": "上海市北翟路1444弄81号B幢-107" },
-      //   { "value": "H6K-5607-010-0-0", "address": "上海市嘉定区新郁路817号" },
-      //   { "value": "H6K-5608-010-0-0", "address": "嘉定区曹安路1611号" }
-      // ];
+      return [
+        { "value": "导管1-0102", "address": "上海市长宁区淞虹路661号" },
+        { "value": "导管2-0202", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
+        { "value": "导管3-0302", "address": "天山西路438号" },
+        { "value": "导管4-0402", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
+        { "value": "导管5-0502", "address": "上海市长宁区金钟路633号" },
+        { "value": "导管6-0602", "address": "上海市嘉定区曹安公路曹安路1685号" },
+        { "value": "导管7-0702", "address": "上海市普陀区同普路1435号" },
+        { "value": "导管8-0802", "address": "上海市北翟路1444弄81号B幢-107" },
+        { "value": "导管9-0902", "address": "上海市嘉定区新郁路817号" },
+        { "value": "导管10-1002", "address": "嘉定区曹安路1611号" }
+      ];
     },
     // 模糊搜索
     querySearchAsync(queryString, cb) {
@@ -295,91 +258,28 @@ export default {
       this.formInline.pname = item.value
       console.log('令号，图号',this.formInline);
     },
-    
-    // 处理检测结果计数
-    fetchTotal() {
-      getTotal().then(response => {
-        console.log('total接口', response.data);
-        this.form.result = this.detectTotal(response.data)
-      })
-    },
-    // 缺陷类型转化
-    detectFromat(item) {
-      let arr = []
-      if(item.def1 != 0){
-        arr.push('划痕缺陷')
-      }
-      if(item.def2 != 0){
-        arr.push('压坑缺陷')
-      }
-      if(item.def3 != 0){
-        arr.push('腐蚀缺陷')
-      }
-      if(item.def4 != 0){
-        arr.push('裂纹缺陷')
-      }
-      if(arr.length == 0){
-        arr.push('检测合格')
-      }
-      return arr
-    },
-    // 检测结果计数
-    detectTotal(item) {
-      let arr = []
-      if(item.def1 != 0){
-        arr.push({label:'划痕缺陷',value: item.def1})
-      }
-      if(item.def2 != 0){
-        arr.push({label:'压坑缺陷',value: item.def2})
-      }
-      if(item.def3 != 0){
-        arr.push({label:'腐蚀缺陷',value: item.def3})
-      }
-      if(item.def4 != 0){
-        arr.push({label:'裂纹缺陷',value: item.def4})
-      }
-      if(item.def0 != 0){
-        arr.push({label:'检测合格',value: item.def0})
-      }
-      return arr
-    },
+   
     onSubmit() {
       if (this.formInline.name != '' && this.formInline.pname != '') {
         this.$message({
           message: '令号，图号 提交成功!',
           type: 'success'
         })
-        var formData = new FormData();
-        formData.append("name", this.formInline.name);
-        formData.append("pname", this.formInline.state);
-        console.log("formInline",this.formInline);
-        postData(formData).then(response => {
-          if(response.code == 200){
-            // 图号 令号 上传成功
-            // 开始监听msg
-            this.time = setInterval(() => {
-              getID().then(response => {
-                let data = response.data
-                if(data.id !== this.id) {
-                  this.$store.commit("SET_TOTAL") // 检测工件数+1 
-                  this.form.total = this.$store.state.form.total
-                  this.id = data.id
-                }
-              })
-            },1000)
-          }
-        })
-      } else {
-        this.$message({
-        message: '请检查令号和图号格式!',
-        type: 'error'
-      })
+        this.form.total++
+        this.id=this.id + 1
+        this.form.defectType = []
+        this.form.oriImg = []
+        this.form.markImg = []
+        this.form.detecte = ''
+        this.fetchData()
+        this.flag = false // 在这一步将flase置为false
       }
     },
     playAudio() {
       // Fixfox和chrome不支持自动播放 Edge可以
       let audio = document.getElementById("audioId");
       if (this.form.detecte == '检测合格') {
+        console.log("判断为true");
         audio.src = qualified
       } else {
         audio.src = error

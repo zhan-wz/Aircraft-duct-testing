@@ -42,7 +42,6 @@
     </div>
 
     <el-table
-      v-loading="listLoading"
       :data="list ? list.slice((page-1)*pageSize,pageSize*page) : list"
       element-loading-text="Loading"
       border
@@ -67,11 +66,16 @@
           <!-- <img :src=scope.row.pId class="image" > -->
         </template>
       </el-table-column>
-      <!-- <el-table-column label="Pageviews" width="110" align="center">
+      <el-table-column label="令号" width="150" align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          {{ scope.row.batch }}
         </template>
-      </el-table-column> -->
+      </el-table-column>
+      <el-table-column label="图号" width="150" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.pName }}
+        </template>
+      </el-table-column>
       <el-table-column class-name="status-col" label="检测结果" width="110" align="center">
         <template slot-scope="scope">
           <div class="item" v-for="(k,v) in scope.row.defectType" :key="k">
@@ -108,6 +112,52 @@
 </template>
 
 <script>
+import myImgout1 from '../../../static/img_out/1.png'
+import myImgout2 from '../../../static/img_out/2.png'
+import myImgout3 from '../../../static/img_out/3.png'
+import myImgout4 from '../../../static/img_out/4.png'
+import myImgout5 from '../../../static/img_out/5.png'
+import myImgout6 from '../../../static/img_out/6.png'
+import myImgout7 from '../../../static/img_out/7.png'
+import myImgout8 from '../../../static/img_out/8.png'
+import myImgout9 from '../../../static/img_out/9.png'
+import myImgout10 from '../../../static/img_out/10.png'
+import myImgout11 from '../../../static/img_out/11.png'
+import myImgout12 from '../../../static/img_out/12.png'
+import myImgout13 from '../../../static/img_out/13.png'
+import myImgout14 from '../../../static/img_out/14.png'
+import myImgout15 from '../../../static/img_out/15.png'
+import myImgout16 from '../../../static/img_out/16.png'
+import myImgout17 from '../../../static/img_out/17.png'
+import myImgout18 from '../../../static/img_out/18.png'
+import myImgout19 from '../../../static/img_out/19.png'
+import myImgout20 from '../../../static/img_out/20.png'
+import myImgout21 from '../../../static/img_out/21.png'
+import myImgout22 from '../../../static/img_out/22.png'
+import myImgout23 from '../../../static/img_out/23.png'
+import myImgout24 from '../../../static/img_out/24.png'
+import myImgout25 from '../../../static/img_out/25.png'
+import myImgout26 from '../../../static/img_out/26.png'
+import myImgout27 from '../../../static/img_out/27.png'
+import myImgout28 from '../../../static/img_out/28.png'
+import myImgout29 from '../../../static/img_out/29.png'
+import myImgout30 from '../../../static/img_out/30.png'
+import myImgout31 from '../../../static/img_out/31.png'
+import myImgout32 from '../../../static/img_out/32.png'
+import myImgout33 from '../../../static/img_out/33.png'
+import myImgout34 from '../../../static/img_out/34.png'
+import myImgout35 from '../../../static/img_out/35.png'
+import myImgout36 from '../../../static/img_out/36.png'
+import myImgout37 from '../../../static/img_out/37.png'
+import myImgout38 from '../../../static/img_out/38.png'
+import myImgout39 from '../../../static/img_out/39.png'
+import myImgout40 from '../../../static/img_out/40.png'
+import myImgout41 from '../../../static/img_out/41.png'
+import myImgout42 from '../../../static/img_out/42.png'
+import myImgout43 from '../../../static/img_out/43.png'
+import myImgout44 from '../../../static/img_out/44.png'
+import myImgout45 from '../../../static/img_out/45.png'
+
 import { getLabel, getList, getPic, getDate, getListItem, getName, getPname, getRead } from '@/api/table'
 import moment from 'moment'
 
@@ -127,9 +177,16 @@ export default {
   },
   data() {
     return {
-      list: null,
-      EveryList: null,
-      listLoading: true,
+      list: [{taskId:1,pId: [myImgout1,myImgout2,myImgout3,myImgout4,myImgout5],defectType: ['划痕缺陷','压坑缺陷'],createTime:'2023-01-01 00:00:00',batch:'架次1-0102',pName:'导管1-0102'},
+            {taskId:2,pId: [myImgout6,myImgout7,myImgout8,myImgout9,myImgout10],defectType: ['划痕缺陷','压坑缺陷'],createTime:'2023-02-01 00:00:00',batch:'架次2-0202',pName:'导管2-0202'},
+            {taskId:3,pId: [myImgout11,myImgout12,myImgout13,myImgout14,myImgout15],defectType: ['划痕缺陷'],createTime:'2023-03-01 00:00:00',batch:'架次3-0302',pName:"导管3-0302"},
+            {taskId:4,pId: [myImgout16,myImgout17,myImgout18,myImgout19,myImgout20],defectType: ['划痕缺陷','压坑缺陷'],createTime:'2023-04-01 00:00:00',batch:'架次4-0402',pName:"导管4-0402"},
+            {taskId:5,pId: [myImgout21,myImgout22,myImgout23,myImgout24,myImgout25],defectType: ['检测合格','压坑缺陷','腐蚀缺陷'],createTime:'2023-05-01 00:00:00',batch:'架次5-0502',pName:"导管5-0502"},
+            {taskId:6,pId: [myImgout26,myImgout27,myImgout28,myImgout29,myImgout30],defectType: ['腐蚀缺陷','压坑缺陷'],createTime:'2023-05-10 00:00:00',batch:"架次6-0602",pName:"导管6-0602"},
+            {taskId:7,pId: [myImgout31,myImgout32,myImgout33,myImgout34,myImgout35],defectType: ['裂纹缺陷','压坑缺陷'],createTime:'2023-05-21 12:00:00',batch:"架次7-0702",pName:"导管7-0702"},
+            {taskId:8,pId: [myImgout36,myImgout37,myImgout38,myImgout39,myImgout40],defectType: ['裂纹缺陷','压坑缺陷'],createTime:'2023-05-21 14:00:00',batch:"架次8-0802",pName:"导管8-0802"},
+            {taskId:9,pId: [myImgout41,myImgout42,myImgout43,myImgout44,myImgout45],defectType: ['划痕缺陷','裂纹缺陷','压坑缺陷'],createTime:'2023-05-21 16:00:00',batch:"架次9-0902",pName:"导管9-0902"},
+          ],
       loadingFilter: false,
       loadingClearFilter: false,
       // 日期快捷选择
@@ -160,10 +217,32 @@ export default {
           }
           }]
       },
-      name: '', // 令号 从数据库中拿
-      pname: '', // 图号 从数据库中拿
-      nameResult: [],
-      pnameResult: [],
+      name: '', 
+      pname: '', 
+      nameResult: [
+        { "value": "架次1-0102", "address": "上海市长宁区淞虹路661号" },
+        { "value": "架次2-0202", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
+        { "value": "架次3-0302", "address": "天山西路438号" },
+        { "value": "架次4-0402", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
+        { "value": "架次5-0502", "address": "上海市长宁区金钟路633号" },
+        { "value": "架次6-0602", "address": "上海市嘉定区曹安公路曹安路1685号" },
+        { "value": "架次7-0702", "address": "上海市普陀区同普路1435号" },
+        { "value": "架次8-0802", "address": "上海市北翟路1444弄81号B幢-107" },
+        { "value": "架次9-0902", "address": "上海市嘉定区新郁路817号" },
+        { "value": "架次10-1002", "address": "嘉定区曹安路1611号" }
+      ],// 令号 从数据库中拿
+      pnameResult: [
+        { "value": "导管1-0102", "address": "上海市长宁区淞虹路661号" },
+        { "value": "导管2-0202", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
+        { "value": "导管3-0302", "address": "天山西路438号" },
+        { "value": "导管4-0402", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
+        { "value": "导管5-0502", "address": "上海市长宁区金钟路633号" },
+        { "value": "导管6-0602", "address": "上海市嘉定区曹安公路曹安路1685号" },
+        { "value": "导管7-0702", "address": "上海市普陀区同普路1435号" },
+        { "value": "导管8-0802", "address": "上海市北翟路1444弄81号B幢-107" },
+        { "value": "导管9-0902", "address": "上海市嘉定区新郁路817号" },
+        { "value": "导管10-1002", "address": "嘉定区曹安路1611号" }
+      ],// 图号 从数据库中拿
       datePicker: '',
       // 标签选项
       options: [{
@@ -188,16 +267,10 @@ export default {
     }
   },
 
-  mounted() {
-    this.fetchData()
-    // 拿到令号数据
-    this.fetchName()
-  },
-
   destroyed() {
     this.list = null
   },
-
+  
   watch:{
     // 不监听 后端传参
     datePicker: {
@@ -209,118 +282,6 @@ export default {
   },
   
   methods: {
-    fetchName() {
-      // 获取令号
-      getName().then(response => {
-        if(response.code == 200) {
-          let list = response.data
-          list.forEach((item, index)=>{
-						item.value = list[index].Value
-					})
-          this.nameResult = list
-        }
-      }),
-      // 获取图号
-      getPname().then(response => {
-        if(response.code == 200) {
-          let list = response.data
-          list.forEach((item, index)=>{
-						item.value = list[index].Value
-					})
-          this.pnameResult = list
-        }
-      })
-      // getRead().then(res => {
-      //   console.log(res);
-      // })
-    },
-    
-    fetchData() {
-      var l = []
-      var pic = []
-      var def = []
-      this.listLoading = true
-      getList().then(response => {       
-        this.EveryList = response.data
-        for (let index = 0; index < this.EveryList.length; index++) {
-          if ( (index+1) % 5 == 0) {
-            getListItem(this.EveryList[index].taskId).then(response => {
-              response.data.forEach( (item,index) => {
-                pic.push(item.pId)
-                def.push(this.detectFromat(item))
-                
-                if (index == 4) {
-                  item.pId = pic
-                  item.defectType = def
-                  pic = []
-                  def = []
-                  l.push(item)
-                }
-              })
-              
-              // 35/5 = 7 处理为 7个导管
-              if(l.length == this.EveryList.length/5) {
-                l.forEach(item => {
-                  item.defectType = item.defectType.flat(Infinity) // 数组拍平
-                  item.defectType = Array.from(new Set(item.defectType)) // 去重
-                  var idpic = []
-                  item.pId.forEach(id => {
-                    idpic.push(`http://localhost:8080/api/MarkImage/${id}`)
-                  })
-                  item.pId = idpic
-                })
-                // 按照taskId进行排序 从小到大
-                this.list = l.sort(this.compare('taskId', true))
-                console.log('this.list',this.list);
-              }
-            })
-          } 
-        }
-        this.listLoading = false
-      })
-    },
-    // 一个导管放在一行
-    /** 两个参数： 参数1 是排序用的字段， 参数2 是：是否升序排序 true 为升序，false为降序*/
-    compare (attr,rev) {
-      // console.log(attr, rev)
-      if(rev ==  undefined){
-          rev = 1;
-      }else{
-          rev = (rev) ? 1 : -1;
-      }
-      return (a,b) => {
-        a = a[attr];
-        b = b[attr];
-        if(a < b){
-            return rev * -1;
-        }
-        if(a > b){
-            return rev * 1;
-        }
-        return 0;
-      }
-    },
-   
-    // 缺陷类型转化
-    detectFromat(item) {
-      let arr = []
-      if(item.def1 != 0){
-        arr.push('划痕缺陷')
-      }
-      if(item.def2 != 0){
-        arr.push('压坑缺陷')
-      }
-      if(item.def3 != 0){
-        arr.push('腐蚀缺陷')
-      }
-      if(item.def4 != 0){
-        arr.push('裂纹缺陷')
-      }
-      if(arr.length == 0){
-        arr.push('检测合格')
-      }
-      return arr
-    },
     /**
      * 令号查询
      */
@@ -399,31 +360,7 @@ export default {
         this.fetchData()
       }
     },
-    
-    // 时间筛选 ---- 2/25完成 ---- 后端接口实现
-    // handleFilterData()  {
-    //   let date = []
-    //   if(this.datePicker) {
-    //     // 筛选日期格式化处理
-    //     this.datePicker.forEach(i => {
-    //       date.push(moment(i).format('YYYY-MM-DD HH:mm:ss')) //"2019-04-13 16:46:40"
-    //     });
-    //     let jsonDate = JSON.stringify({beginDate: date[0],endDate: date[1]})
-    //     console.log('===========jsonDate=======',jsonDate);
-    //     this.listLoading = true
-    //     getDate(jsonDate).then(res => {
-    //       console.log('--------res-------',res.data);
-    //       this.list = res.data
-    //       this.list.forEach(item => {
-    //         item.defectType = this.detectFromat(item) 
-    //         item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
-    //         console.log('item-------',item);
-    //         // awiat getPic一下
-    //       })
-    //       this.listLoading = false
-    //     })
-    //   }
-    // },
+
 
     // 标签筛选 -- 1/28 完成 （可优化）
     handleFilter() {
@@ -449,44 +386,6 @@ export default {
       // this.datePicker = []
       this.loadingClearFilter = false
     }
-    // 标签筛选 --- 2/27完成（后端调用 有问题）
-    // handleFilter() {
-    //   console.log('========this.labelPicker=======',this.labelPicker);
-    //   let arrLable = []
-    //   this.labelPicker.forEach(label => {
-    //     if(label == '划痕缺陷') {
-    //       arrLable.push('def1')
-    //     }
-    //     if(label == '压坑缺陷') {
-    //       arrLable.push('def2')
-    //     }
-    //     if(label == '腐蚀缺陷') {
-    //       arrLable.push('def3')
-    //     }
-    //     if(label == '裂纹缺陷') {
-    //       arrLable.push('def4')
-    //     }
-    //     if(label == '检测合格') {
-    //       arrLable.push('def0')
-    //     }
-    //   })
-    //   console.log('========arrLable=======',arrLable);
-      
-    //   let jsonLable = JSON.stringify({defect: arrLable})
-    //   console.log('------------jsonLable---------',jsonLable);
-    //   this.listLoading = true
-    //   getLabel(jsonLable).then(res => {
-    //     console.log('--------res-------',res.data);
-    //     this.list = res.data
-    //     this.list.forEach(item => {
-    //       item.defectType = this.detectFromat(item) 
-    //       item.pId = `http://localhost/api/OriImage/${item.pId}` // this.getPicture(item.pId)
-    //       console.log('item-------',item);
-    //       // awiat getPic一下
-    //     })
-    //     this.listLoading = false
-    //   })
-    // }
   }
 }
 </script>
