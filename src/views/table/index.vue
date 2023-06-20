@@ -112,53 +112,22 @@
 </template>
 
 <script>
-import myImgout1 from '../../../static/img_out/1.png'
-import myImgout2 from '../../../static/img_out/2.png'
-import myImgout3 from '../../../static/img_out/3.png'
-import myImgout4 from '../../../static/img_out/4.png'
-import myImgout5 from '../../../static/img_out/5.png'
-import myImgout6 from '../../../static/img_out/6.png'
-import myImgout7 from '../../../static/img_out/7.png'
-import myImgout8 from '../../../static/img_out/8.png'
-import myImgout9 from '../../../static/img_out/9.png'
-import myImgout10 from '../../../static/img_out/10.png'
-import myImgout11 from '../../../static/img_out/11.png'
-import myImgout12 from '../../../static/img_out/12.png'
-import myImgout13 from '../../../static/img_out/13.png'
-import myImgout14 from '../../../static/img_out/14.png'
-import myImgout15 from '../../../static/img_out/15.png'
-import myImgout16 from '../../../static/img_out/16.png'
-import myImgout17 from '../../../static/img_out/17.png'
-import myImgout18 from '../../../static/img_out/18.png'
-import myImgout19 from '../../../static/img_out/19.png'
-import myImgout20 from '../../../static/img_out/20.png'
-import myImgout21 from '../../../static/img_out/21.png'
-import myImgout22 from '../../../static/img_out/22.png'
-import myImgout23 from '../../../static/img_out/23.png'
-import myImgout24 from '../../../static/img_out/24.png'
-import myImgout25 from '../../../static/img_out/25.png'
-import myImgout26 from '../../../static/img_out/26.png'
-import myImgout27 from '../../../static/img_out/27.png'
-import myImgout28 from '../../../static/img_out/28.png'
-import myImgout29 from '../../../static/img_out/29.png'
-import myImgout30 from '../../../static/img_out/30.png'
-import myImgout31 from '../../../static/img_out/31.png'
-import myImgout32 from '../../../static/img_out/32.png'
-import myImgout33 from '../../../static/img_out/33.png'
-import myImgout34 from '../../../static/img_out/34.png'
-import myImgout35 from '../../../static/img_out/35.png'
-import myImgout36 from '../../../static/img_out/36.png'
-import myImgout37 from '../../../static/img_out/37.png'
-import myImgout38 from '../../../static/img_out/38.png'
-import myImgout39 from '../../../static/img_out/39.png'
-import myImgout40 from '../../../static/img_out/40.png'
-import myImgout41 from '../../../static/img_out/41.png'
-import myImgout42 from '../../../static/img_out/42.png'
-import myImgout43 from '../../../static/img_out/43.png'
-import myImgout44 from '../../../static/img_out/44.png'
-import myImgout45 from '../../../static/img_out/45.png'
+import myImgout1 from '../../../static/img_out/1.jpg'
+import myImgout2 from '../../../static/img_out/2.jpg'
+import myImgout3 from '../../../static/img_out/3.jpg'
+import myImgout4 from '../../../static/img_out/4.jpg'
+import myImgout5 from '../../../static/img_out/5.jpg'
+import myImgout6 from '../../../static/img_out/6.jpg'
+import myImgout7 from '../../../static/img_out/7.jpg'
+import myImgout8 from '../../../static/img_out/8.jpg'
+import myImgout9 from '../../../static/img_out/9.jpg'
+import myImgout10 from '../../../static/img_out/10.jpg'
+import myImgout11 from '../../../static/img_out/11.jpg'
+import myImgout12 from '../../../static/img_out/12.jpg'
+import myImgout13 from '../../../static/img_out/13.jpg'
+import myImgout14 from '../../../static/img_out/14.jpg'
+import myImgout15 from '../../../static/img_out/15.jpg'
 
-import { getLabel, getList, getPic, getDate, getListItem, getName, getPname, getRead } from '@/api/table'
 import moment from 'moment'
 
 export default {
@@ -179,13 +148,7 @@ export default {
     return {
       list: [{taskId:1,pId: [myImgout1,myImgout2,myImgout3,myImgout4,myImgout5],defectType: ['划痕缺陷','压坑缺陷'],createTime:'2023-01-01 00:00:00',batch:'架次1-0102',pName:'导管1-0102'},
             {taskId:2,pId: [myImgout6,myImgout7,myImgout8,myImgout9,myImgout10],defectType: ['划痕缺陷','压坑缺陷'],createTime:'2023-02-01 00:00:00',batch:'架次2-0202',pName:'导管2-0202'},
-            {taskId:3,pId: [myImgout11,myImgout12,myImgout13,myImgout14,myImgout15],defectType: ['划痕缺陷'],createTime:'2023-03-01 00:00:00',batch:'架次3-0302',pName:"导管3-0302"},
-            {taskId:4,pId: [myImgout16,myImgout17,myImgout18,myImgout19,myImgout20],defectType: ['划痕缺陷','压坑缺陷'],createTime:'2023-04-01 00:00:00',batch:'架次4-0402',pName:"导管4-0402"},
-            {taskId:5,pId: [myImgout21,myImgout22,myImgout23,myImgout24,myImgout25],defectType: ['检测合格','压坑缺陷','腐蚀缺陷'],createTime:'2023-05-01 00:00:00',batch:'架次5-0502',pName:"导管5-0502"},
-            {taskId:6,pId: [myImgout26,myImgout27,myImgout28,myImgout29,myImgout30],defectType: ['腐蚀缺陷','压坑缺陷'],createTime:'2023-05-10 00:00:00',batch:"架次6-0602",pName:"导管6-0602"},
-            {taskId:7,pId: [myImgout31,myImgout32,myImgout33,myImgout34,myImgout35],defectType: ['裂纹缺陷','压坑缺陷'],createTime:'2023-05-21 12:00:00',batch:"架次7-0702",pName:"导管7-0702"},
-            {taskId:8,pId: [myImgout36,myImgout37,myImgout38,myImgout39,myImgout40],defectType: ['裂纹缺陷','压坑缺陷'],createTime:'2023-05-21 14:00:00',batch:"架次8-0802",pName:"导管8-0802"},
-            {taskId:9,pId: [myImgout41,myImgout42,myImgout43,myImgout44,myImgout45],defectType: ['划痕缺陷','裂纹缺陷','压坑缺陷'],createTime:'2023-05-21 16:00:00',batch:"架次9-0902",pName:"导管9-0902"},
+            {taskId:3,pId: [myImgout11,myImgout12,myImgout13,myImgout14,myImgout15],defectType: ['划痕缺陷'],createTime:'2023-03-01 00:00:00',batch:'架次3-0302',pName:"导管3-0302"}
           ],
       loadingFilter: false,
       loadingClearFilter: false,

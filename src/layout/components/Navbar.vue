@@ -22,7 +22,7 @@
           <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
             <el-dropdown-item>Docs</el-dropdown-item>
           </a> -->
-          <el-dropdown-item divided @click.native="logout">
+          <el-dropdown-item divided >
             <span style="display:block;">退出账户</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -35,7 +35,6 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-import { logout } from '@/api/user'
 
 export default {
   components: {
